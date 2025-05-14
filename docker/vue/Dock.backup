@@ -1,0 +1,17 @@
+FROM node:lts-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+COPY postcss.config.cjs ./
+COPY pnpm*.yaml ./
+
+RUN npm install -g pnpm && \
+    pnpm install && \
+    pnpm add -D @tailwindcss/postcss tailwindcss autoprefixer postcss
+
+COPY . .
+
+EXPOSE 5173
+
+CMD ["npx", "vite", "--host", "0.0.0.0"]
