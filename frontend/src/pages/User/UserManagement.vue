@@ -234,17 +234,14 @@ const openEditModal = (user) => {
 
 // Update user
 const editUser = async () => {
-  console.log("userBeingEdited.value : ", userBeingEdited.value.id)
   try {
     const token = sessionStorage.getItem('access_token')
     if (!token) {
       alert('Unauthorized: No access token found.')
       return
     }
-    console.log("form val : ", form.value)
     let formEdited = {}
     if (form.value) {
-      console.log("sene")
       formEdited = {
         'email': form.value.email,
         'password': form.value.password,

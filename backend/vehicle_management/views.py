@@ -15,33 +15,6 @@ from .serializers import (
 from .models import Motorcycle, Car
 
 """ Motorcycles """
-class MotorcycleView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, pk, format=None):
-        """return one user request"""
-        try:
-            motorcycle = [
-                {
-                    "id": mc.id,
-                    "release_year": mc.release_year,
-                    "color": mc.color,
-                    "price": mc.price,
-                    "stock": mc.stock,
-                    "machine": mc.machine,
-                    "suspenssion_type": mc.suspenssion_type,
-                    "transmission_type": mc.transmission_type,
-                }
-                for mc in Motorcycle.objects.filter(id=pk)
-            ]
-
-            return Response(motorcycle, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response(
-                {"error": f"{str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-
-
 class MotorcycleListView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -129,33 +102,6 @@ class MotorcycleDeleteView(APIView):
 
 
 """ Cars """
-class CarView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, pk, format=None):
-        """return one user request"""
-        try:
-            car = [
-                {
-                    "id": car.id,
-                    "release_year": car.release_year,
-                    "color": car.color,
-                    "price": car.price,
-                    "stock": car.stock,
-                    "machine": car.machine,
-                    "suspenssion_type": car.suspenssion_type,
-                    "transmission_type": car.transmission_type,
-                }
-                for car in Car.objects.filter(id=pk)
-            ]
-
-            return Response(car, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response(
-                {"error": f"{str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-
-
 class CarListView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -170,8 +116,8 @@ class CarListView(APIView):
                     "price": car.price,
                     "stock": car.stock,
                     "machine": car.machine,
-                    "suspenssion_type": car.suspenssion_type,
-                    "transmission_type": car.transmission_type,
+                    "passenger_cap": car.passenger_cap,
+                    "type": car.type,
                 }
                 for car in Car.objects.all()
             ]
@@ -188,13 +134,13 @@ class CarCreateView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
-        serializer = MotorcycleCreateSerializer(data=request.data)
+        serializer = CarCreateSerializer(data=request.data)
         if serializer.is_valid():
-            motorcycle = serializer.save()
+            car = serializer.save()
             return Response(
                 {
-                    "message": "Motorcycle created successfully",
-                    "data": MotorcycleCreateSerializer(motorcycle).data,
+                    "message": "Car created successfully",
+                    "data": CarCreateSerializer(car).data,
                 },
                 status=status.HTTP_201_CREATED,
             )
@@ -207,20 +153,20 @@ class CarUpdateView(APIView):
 
     def put(self, request, pk, format=None):
         try:
-            motorcycle = Motorcycle.objects.get(pk=pk)
-        except Motorcycle.DoesNotExist:
+            car = Car.objects.get(pk=pk)
+        except Car.DoesNotExist:
             return Response(
-                {"error": "Motorcycle not found"}, status=status.HTTP_404_NOT_FOUND
+                {"error": "Car not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
-        serializer = MotorcycleUpdateSerializer(
-            motorcycle, data=request.data, partial=True
+        serializer = CarUpdateSerializer(
+            car, data=request.data, partial=True
         )
 
         if serializer.is_valid():
             serializer.save()
             return Response(
-                {"message": "Motorcycle updated successfully", "user": serializer.data},
+                {"message": "Car updated successfully", "user": serializer.data},
                 status=status.HTTP_200_OK,
             )
 
@@ -234,9 +180,9 @@ class CarDeleteView(APIView):
     permission_classes = [IsAuthenticated]
 
     def delete(self, request, pk, format=None):
-        user = get_object_or_404(Motorcycle, pk=pk)
+        user = get_object_or_404(Car, pk=pk)
         user.delete()
         return Response(
-            {"message": "Motorcycle deleted successfully"},
+            {"message": "Car deleted successfully"},
             status=status.HTTP_204_NO_CONTENT,
         )

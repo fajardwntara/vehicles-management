@@ -1,7 +1,7 @@
 <template>
     <div class="overflow-x-auto">
         <slot name="add-button"></slot>
-
+        
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-white">
                 <tr>
@@ -20,9 +20,9 @@
                         {{ (currentPage - 1) * pageSize + index + 1 }}
                     </td>
 
-                    <td v-for="column in columns" :key="column"
+                    <td v-for="column in columns" :key="column.model"
                         class="px-6 py-4 text-xs whitespace-nowrap dark:bg-slate-50 dark:text-gray-700">
-                        {{ data[column] }}
+                        {{ formatValue(column, data[column]) }}
                     </td>
 
                     <td class="px-6 py-4 whitespace-nowrap dark:bg-slate-50">
@@ -32,7 +32,7 @@
             </tbody>
             <tbody v-else>
                 <tr>
-                    <td colspan="5" class="text-center px-6 py-4 text-gray-500 text-xs">No data found.</td>
+                    <td colspan="100%" class="text-center px-6 py-4 text-gray-500 text-xs">No data found.</td>
                 </tr>
             </tbody>
         </table>
@@ -56,6 +56,7 @@
 
 <script setup>
 import { computed, defineProps } from 'vue'
+import { formatValueRupiah } from '@/utils/Utils'
 
 const props = defineProps({
     data: Array,
@@ -68,11 +69,22 @@ const props = defineProps({
     nextPage: Function,
 })
 
+const formatValue = (column, value) => {
+    switch (column) {
+        case 'price':
+            return formatValueRupiah(value)
+        default:
+            return value
+    }
+}
+
 const paginatedData = computed(() => {
-  const start = (props.currentPage - 1) * props.pageSize
-  const end = start + props.pageSize
-  return props.data.slice(start, end)
+    const start = (props.currentPage - 1) * props.pageSize
+    const end = start + props.pageSize
+    return props.data.slice(start, end)
 })
+
+
 </script>
 
 <style scoped></style>

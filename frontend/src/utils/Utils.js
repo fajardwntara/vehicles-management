@@ -1,11 +1,10 @@
-export const formatValue = (value) => Intl.NumberFormat('en-US', {
+export const formatValueRupiah = (value) => Intl.NumberFormat('id-ID', {
   style: 'currency',
-  currency: 'USD',
-  maximumSignificantDigits: 3,
-  notation: 'compact',
+  currency: 'IDR',
+  minimumFractionDigits: 0,
 }).format(value);
 
-export const formatThousands = (value) => Intl.NumberFormat('en-US', {
+export const formatThousands = (value) => Intl.NumberFormat('id-ID', {
   maximumSignificantDigits: 3,
   notation: 'compact',
 }).format(value);

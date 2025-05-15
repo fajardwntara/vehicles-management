@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Login from './pages/Login.vue'
 import User from './pages/User/UserManagement.vue'
 import VehicleManagement from './pages/Vehicles/VehicleManagement.vue'
-import Motor from '@/pages/Vehicles/Managements/Motorcycle.vue'
+import Vehicle from '@/pages/Vehicles/Managements/Vehicle.vue'
 
 const routerHistory = createWebHistory()
 
@@ -28,7 +28,7 @@ const router = createRouter({
     },
     {
       path: '/vehicle-management/motor',
-      component: Motor
+      component: Vehicle
     },
     {
       path: '/:pathMatch(.*)*',

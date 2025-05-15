@@ -23,11 +23,11 @@
   
           <div class="mt-6 flex justify-end space-x-4">
             <button @click="onCancel"
-              class="text-xs mx-2 px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:text-white">
+              class="cursor-pointer text-xs mx-2 px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:text-white">
               Cancel
             </button>
             <button @click="onSubmit"
-              class="text-xs px-4 py-2 rounded-lg text-white"
+              class="cursor-pointer text-xs px-4 py-2 rounded-lg text-white"
               :class="submitClass">
               {{ submitText }}
             </button>

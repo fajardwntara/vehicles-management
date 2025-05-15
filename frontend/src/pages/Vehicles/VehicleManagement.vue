@@ -38,11 +38,12 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
-import Sidebar from '../../partials/Sidebar.vue'
-import Header from '../../partials/Header.vue'
+import Sidebar from '@/partials/Sidebar.vue'
+import Header from '@/partials/Header.vue'
 
 // Icon
 import Car from '@/icons/Car.vue'
+import SalesPurchases from '@/icons/SalesPurchases.vue'
 
 const router = useRouter()
 
@@ -51,14 +52,15 @@ const sidebarOpen = ref(false)
 const menus = [
     {
         title: 'Vehicles',
-        description: 'Vehicle inventory and transactions',
+        description: 'Vehicle management stock and prices',
         path: '/vehicle-management/motor',
         icon: Car
     },
     {
         title: 'Sales & Purchases',
-        description: 'Vehicle inventory and transactions',
-        path: '/vehicles',
+        description: 'Vehicle transactions',
+        path: '/vehicle-management/sales-purchases',
+        icon: SalesPurchases
     },
     {
         title: 'Reports',

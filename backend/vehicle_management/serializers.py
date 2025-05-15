@@ -5,7 +5,7 @@ from .models import *
 class MotorcycleCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Motorcycle
-        fields = ['release_year', 'color', 'price', 'stock', 'machine', 'suspenssion_type', 'transmission_type']
+        fields = ['id', 'release_year', 'color', 'price', 'stock', 'machine', 'suspenssion_type', 'transmission_type']
 
 class MotorcycleUpdateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,11 +16,11 @@ class MotorcycleUpdateSerializer(serializers.ModelSerializer):
 # Cars
 class CarCreateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Motorcycle
+        model = Car
         fields = ['release_year', 'color', 'price', 'stock', 'machine', 'passenger_cap', 'type']
 
 class CarUpdateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Motorcycle
+        model = Car
         fields = ['id', 'release_year', 'color', 'price', 'stock', 'machine', 'passenger_cap', 'type']
 
