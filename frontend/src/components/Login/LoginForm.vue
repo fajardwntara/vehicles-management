@@ -53,7 +53,7 @@ const handleLogin = async () => {
         sessionStorage.setItem('refresh_token', data.refresh)
 
         if ((data.access && data.refresh) ) {
-            router.push('/dashboard')
+            router.push('/vehicle-management')
         }
 
     } catch (err) {

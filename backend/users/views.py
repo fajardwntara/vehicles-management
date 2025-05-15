@@ -21,7 +21,7 @@ class CurrentUserView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
-        user = request.user 
+        user = request.user
         serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -77,7 +77,7 @@ class UserCreateView(APIView):
                 "user": {
                     "username": user.username,
                     "email": user.email,
-                    "role": user.role
+                    "role": user.role,
                 }
             }, status=status.HTTP_201_CREATED)
             

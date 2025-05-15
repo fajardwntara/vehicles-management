@@ -61,7 +61,6 @@ export default {
     const trigger = ref(null)
     const dropdown = ref(null)
     const user = ref(null)
-    const errorUser = ref(null)
     const loading = ref(true)
     const router = useRouter()
 
@@ -75,9 +74,12 @@ export default {
         const response = await getCurrentUser()
         user.value = response
       } catch (err) {
-        errorUser.value = err
+        if (err.message == "no_token_found") {
+          alert("Please login!")
+        } else {
+          alert("Token is expired.\nPlease login!")
+        }
         sessionStorage.clear()
-        alert("Token has been expired. Please login again!")
         router.push('/login')
       } finally {
         loading.value = false
@@ -110,7 +112,6 @@ export default {
       trigger,
       dropdown,
       user,
-      errorUser,
       signOut,
     }
   }

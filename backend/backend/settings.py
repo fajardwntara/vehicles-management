@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     
     # apps 
     'users',
+    'vehicle_management',
 ]
 
 MIDDLEWARE = [
@@ -143,13 +144,16 @@ REST_FRAMEWORK = {
     ),
 }
 
-# SIMPLE_JWT = {
-#     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # default: 5 menit
-#     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # default: 1 hari
-#     'ROTATE_REFRESH_TOKENS': False,
-#     'BLACKLIST_AFTER_ROTATION': False,
-#     'AUTH_HEADER_TYPES': ('Bearer',),
-# }
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # default: 5 menit
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # default: 1 hari
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': False,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
 
 CORS_ALLOW_ALL_ORIGINS = True
 AUTH_USER_MODEL = 'users.User'
+
+# For development only, password user can be simple.
+AUTH_PASSWORD_VALIDATORS = []

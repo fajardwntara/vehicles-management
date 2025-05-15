@@ -8,7 +8,7 @@ export const getCurrentUser = async () => {
     const token = sessionStorage.getItem('access_token')
 
     if (!token) {
-        throw new Error('No token found')
+        throw new Error('no_token_found')
     }
 
     try {
@@ -21,9 +21,6 @@ export const getCurrentUser = async () => {
         return response.data
 
     } catch (error) {
-        alert("Token has been expired. Please refresh/login again.")
-        window.location.href = '/login'
-        sessionStorage.clear()
         console.error('Failed to fetch users:', error)
     }
 }
@@ -44,9 +41,6 @@ export const getListUser = async (page, pageSize) => {
 
         return response.data
     } catch (error) {
-        alert("Token has been expired. Please refresh/login again.")
-        window.location.href = '/login'
-        sessionStorage.clear()
         console.error('Failed to fetch users:', error)
     }
 }

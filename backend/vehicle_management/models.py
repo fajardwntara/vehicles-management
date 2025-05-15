@@ -3,8 +3,6 @@ from django.core.validators import MinValueValidator
 
 class Vehicle(models.Model):
     
-    vehicle_rel_uuid = models.CharField()
-    name = models.CharField()
     release_year = models.IntegerField(
         validators=[MinValueValidator(1900)]
     )
@@ -25,23 +23,21 @@ class Vehicle(models.Model):
     def __str__(self):
         return f"{self.color} - {self.release_year} - {self.price}"
 
-class Motor(models.Model):
+class Motorcycle(Vehicle):
     
-    uuid = models.UUIDField()
     machine = models.CharField(max_length=100)
     suspenssion_type = models.CharField(max_length=100)
     transmission_type = models.CharField(max_length=100)
     
     class Meta:
-        verbose_name = 'Motor'
-        verbose_name_plural = 'Motors'
+        verbose_name = 'Motorcycle'
+        verbose_name_plural = 'Motorcycles'
     
     def __str__(self):
         return f"{self.uuid} - {self.machine}"
 
-class Mobil(models.Model):
+class Car(Vehicle):
     
-    uuid = models.UUIDField()
     machine = models.CharField(max_length=100)
     passenger_cap = models.PositiveIntegerField()
     type = models.CharField(max_length=100)

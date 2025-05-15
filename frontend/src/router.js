@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Dashboard from './pages/Dashboard.vue'
+import VehicleManagement from './pages/Vehicles/VehicleManagement.vue'
 import Login from './pages/Login.vue'
 import User from './pages/User/UserManagement.vue'
 
@@ -9,8 +9,12 @@ const router = createRouter({
   history: routerHistory,
   routes: [
     {
-      path: '/dashboard',
-      component: Dashboard
+      path: '/',
+      redirect: '/login'
+    },
+    {
+      path: '/vehicle-management',
+      component: VehicleManagement
     },
     {
       path: '/login',
@@ -20,6 +24,10 @@ const router = createRouter({
       path: '/user',
       component: User
     },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/login'
+    }
   ]
 })
 
