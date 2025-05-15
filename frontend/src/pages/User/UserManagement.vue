@@ -6,18 +6,18 @@
       <div v-if="showModal || showEditModal"
         class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/20">
         <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg p-6 animate-fade-in">
-          <h2 v-if="showModal" class="text-2xl font-bold text-gray-800 dark:text-white mb-6">Add New User</h2>
+          <h2 v-if="showModal" class="text-xs font-bold text-gray-800 dark:text-white mb-6">Add New User</h2>
           <h2 v-if="showEditModal" class="text-2xl font-bold text-gray-800 dark:text-white mb-6">Edit User</h2>
 
           <div class="space-y-4">
             <input v-model="form.username" type="text" :disabled="showEditModal" placeholder="Username"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white disabled:bg-slate-200 dark:disabled:bg-gray-600" />
+              class="text-xs w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600 dark:bg-gray-800 dark:text-white disabled:bg-slate-200 dark:disabled:bg-gray-600" />
             <input v-model="form.email" type="email" placeholder="Email"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" />
+              class="text-xs w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600 dark:bg-gray-800 dark:text-white" />
             <input v-model="form.password" type="password" placeholder="Password"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" />
+              class="text-xs w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600 dark:bg-gray-800 dark:text-white" />
             <select v-model="form.role"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white">
+              class="text-xs w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600 dark:bg-gray-800 dark:text-white">
               <option disabled value="">Select Role</option>
               <option value="admin">Admin</option>
               <option value="staff">Staff</option>
@@ -27,21 +27,21 @@
           <div class="mt-6 flex justify-end space-x-4">
             <div v-if="showModal">
               <button @click="showModal = false"
-                class="mx-2 cursor-pointer px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:text-white">
+                class="text-xs mx-2 cursor-pointer px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:text-white">
                 Cancel
               </button>
               <button @click="addUser"
-                class=" cursor-pointer px-4 py-2 rounded-lg bg-slate-600 text-white hover:bg-slate-700">
+                class="text-xs cursor-pointer px-4 py-2 rounded-lg bg-slate-600 text-white hover:bg-slate-700">
                 Save
               </button>
             </div>
             <div v-if="showEditModal">
               <button @click="showEditModal = false"
-                class="mx-2 cursor-pointer px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:text-white">
+                class="text-xs mx-2 cursor-pointer px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:text-white">
                 Cancel
               </button>
               <button @click="editUser"
-                class=" cursor-pointer px-4 py-2 rounded-lg bg-yellow-600 text-white hover:bg-yellow-700">
+                class="text-xs cursor-pointer px-4 py-2 rounded-lg bg-yellow-600 text-white hover:bg-yellow-700">
                 Update
               </button>
             </div>
@@ -79,109 +79,48 @@
 
           <!-- Body -->
           <div class="p-4 shadow-xl bg-white rounded-lg" v-if="users">
+            
+            <ListTable :data="users" :currentPage="currentPage" :pageSize="pageSize" :totalPages="totalPages"
+              :prevPage="prevPage" :nextPage="nextPage" :columns="['username', 'role', 'email']"
+              :headerColumns="['Username', 'Role', 'Email', 'Actions']">
 
-            <!-- Table -->
-            <div class="overflow-x-auto">
-              <button @click="showModalAdd"
-                class="m-3 py-2.5 cursor-pointer btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-slate-700 dark:text-gray-100 dark:hover:bg-white">
-                <svg class="dark:fill-gray-100 fill-gray-100" version="1.1" id="Layer_1"
-                  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                  width="1em" height="1.2em" viewBox="0 0 122.879 122.879" enable-background="new 0 0 122.879 122.879"
-                  xml:space="preserve">
-                  <g>
+              <template #add-button>
+                <button @click="showModalAdd"
+                  class="m-3 py-2 cursor-pointer btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-slate-700 dark:text-gray-100 dark:hover:bg-white">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M5 13v-1h6V6h1v6h6v1h-6v6h-1v-6z" />
+                  </svg>
+                  <span class="max-xs:sr-only ml-1 text-xs">New</span>
+                </button>
+              </template>
+
+              <template #button="{ data }">
+                <button @click="openEditModal(data)"
+                  class="bg-slate-100 cursor-pointer hover:bg-slate-200 shadow-xl p-2 text-white rounded-lg mx-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                    class="fill-yellow-700">
+                    <g>
+                      <path
+                        d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z" />
+                      <path
+                        d="M13 3a1 1 0 0 1 .117 1.993L13 5H5v14h14v-8a1 1 0 0 1 1.993-.117L21 11v8a2 2 0 0 1-1.85 1.995L19 21H5a2 2 0 0 1-1.995-1.85L3 19V5a2 2 0 0 1 1.85-1.995L5 3zm6.243.343a1 1 0 0 1 1.497 1.32l-.083.095l-9.9 9.899a1 1 0 0 1-1.497-1.32l.083-.094z" />
+                    </g>
+                  </svg>
+                </button>
+
+                <button @click="deleteUser(data.id)"
+                  class="shadow-xl bg-slate-100 cursor-pointer hover:bg-slate-200 p-2 text-white rounded-lg mx-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                    class="fill-red-500">
                     <path
-                      d="M56.573,4.868c0-0.655,0.132-1.283,0.37-1.859c0.249-0.6,0.61-1.137,1.056-1.583C58.879,0.545,60.097,0,61.44,0 c0.658,0,1.287,0.132,1.863,0.371c0.012,0.005,0.023,0.011,0.037,0.017c0.584,0.248,1.107,0.603,1.543,1.039 c0.881,0.88,1.426,2.098,1.426,3.442c0,0.03-0.002,0.06-0.006,0.089v51.62l51.619,0c0.029-0.003,0.061-0.006,0.09-0.006 c0.656,0,1.285,0.132,1.861,0.371c0.014,0.005,0.025,0.011,0.037,0.017c0.584,0.248,1.107,0.603,1.543,1.039 c0.881,0.88,1.428,2.098,1.428,3.441c0,0.654-0.133,1.283-0.371,1.859c-0.248,0.6-0.609,1.137-1.057,1.583 c-0.445,0.445-0.98,0.806-1.58,1.055v0.001c-0.576,0.238-1.205,0.37-1.861,0.37c-0.029,0-0.061-0.002-0.09-0.006l-51.619,0.001 v51.619c0.004,0.029,0.006,0.06,0.006,0.09c0,0.656-0.133,1.286-0.371,1.861c-0.006,0.014-0.012,0.025-0.018,0.037 c-0.248,0.584-0.602,1.107-1.037,1.543c-0.883,0.882-2.1,1.427-3.443,1.427c-0.654,0-1.283-0.132-1.859-0.371 c-0.6-0.248-1.137-0.609-1.583-1.056c-0.445-0.444-0.806-0.98-1.055-1.58h-0.001c-0.239-0.575-0.371-1.205-0.371-1.861 c0-0.03,0.002-0.061,0.006-0.09V66.303H4.958c-0.029,0.004-0.059,0.006-0.09,0.006c-0.654,0-1.283-0.132-1.859-0.371 c-0.6-0.248-1.137-0.609-1.583-1.056c-0.445-0.445-0.806-0.98-1.055-1.58H0.371C0.132,62.726,0,62.097,0,61.44 c0-0.655,0.132-1.283,0.371-1.859c0.249-0.6,0.61-1.137,1.056-1.583c0.881-0.881,2.098-1.426,3.442-1.426 c0.031,0,0.061,0.002,0.09,0.006l51.62,0l0-51.62C56.575,4.928,56.573,4.898,56.573,4.868L56.573,4.868z" />
-                  </g>
-                </svg>
-                <span class="max-xs:sr-only ml-2">New</span>
-              </button>
+                      d="M2 5.27L3.28 4L5 5.72l.28.28l1 1l2 2L16 16.72l2 2l2 2L18.73 22l-1.46-1.46c-.34.29-.77.46-1.27.46H8c-1.1 0-2-.9-2-2V9.27zM8 19h7.73L8 11.27zM18 7v9.18l-2-2V9h-5.18l-2-2zm-2.5-3H19v2H7.82l-2-2H8.5l1-1h5z" />
+                  </svg>
 
-              <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-white">
-                  <tr>
-                    <th
-                      class="px-6 py-3 text-left text-md font-medium text-gray-700 dark:text-gray-600 uppercase tracking-wider">
-                      #</th>
-                    <th
-                      class="px-6 py-3 text-left text-md font-medium text-gray-700 dark:text-gray-600 uppercase tracking-wider">
-                      Username</th>
-                    <th
-                      class="px-6 py-3 text-left text-md font-medium text-gray-700 dark:text-gray-600 uppercase tracking-wider">
-                      Email
-                    </th>
-                    <th
-                      class="px-6 py-3 text-left text-md font-medium text-gray-700 dark:text-gray-600 uppercase tracking-wider">
-                      Role
-                    </th>
-                    <th
-                      class="px-6 py-3 text-left text-md font-medium text-gray-700 dark:text-gray-600 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
+                </button>
+              </template>
 
-                <tbody class="bg-white divide-y divide-gray-200" v-if="users && users.length > 0">
+            </ListTable>
 
-                  <tr v-for="(user, index) in paginatedUsers" :key="user.id">
-                    <td class="px-6 py-4 whitespace-nowrap dark:bg-slate-50">
-                      {{ (currentPage - 1) * pageSize + index + 1 }}
-                    </td>
-                    <td class="px-6 py-4 text-md whitespace-nowrap dark:bg-slate-50 dark:text-gray-700">{{ user.username
-                      }}</td>
-                    <td class="px-6 py-4 text-md whitespace-nowrap dark:bg-slate-50 dark:text-gray-700">{{ user.email }}
-                    </td>
-                    <td class="px-6 py-4 text-md whitespace-nowrap dark:bg-slate-50 dark:text-gray-700">{{ user.role }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap dark:bg-slate-50">
-
-                      <!-- Edit -->
-                      <button @click="openEditModal(user)"
-                        class="bg-slate-100 cursor-pointer hover:bg-slate-200 shadow-xl p-2 text-white rounded-lg mx-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-yellow-700">
-                          <g>
-                            <path
-                              d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z" />
-                            <path
-                              d="M13 3a1 1 0 0 1 .117 1.993L13 5H5v14h14v-8a1 1 0 0 1 1.993-.117L21 11v8a2 2 0 0 1-1.85 1.995L19 21H5a2 2 0 0 1-1.995-1.85L3 19V5a2 2 0 0 1 1.85-1.995L5 3zm6.243.343a1 1 0 0 1 1.497 1.32l-.083.095l-9.9 9.899a1 1 0 0 1-1.497-1.32l.083-.094z" />
-                          </g>
-                        </svg>
-                      </button>
-
-                      <!-- Delete -->
-                      <button @click="deleteUser(user.id)"
-                        class="shadow-xl bg-slate-100 cursor-pointer hover:bg-slate-200 p-2 text-white rounded-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-red-500">
-                          <path
-                            d="M2 5.27L3.28 4L5 5.72l.28.28l1 1l2 2L16 16.72l2 2l2 2L18.73 22l-1.46-1.46c-.34.29-.77.46-1.27.46H8c-1.1 0-2-.9-2-2V9.27zM8 19h7.73L8 11.27zM18 7v9.18l-2-2V9h-5.18l-2-2zm-2.5-3H19v2H7.82l-2-2H8.5l1-1h5z" />
-                        </svg>
-
-                      </button>
-
-                    </td>
-                  </tr>
-                </tbody>
-                <tbody v-else>
-                  <tr>
-                    <td colspan="3" class="text-center px-6 py-4 text-gray-500">No data found.</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <!-- Pagination -->
-            <div class="mt-4 flex justify-center gap-5 items-center">
-              <button @click="prevPage" :disabled="currentPage === 1"
-                class="px-4 py-2 bg-slate-600 text-white rounded hover:bg-slate-700 disabled:opacity-50">
-                < </button>
-
-                  <span class="text-sm dark:text-gray-900 text-gray-600">Page {{ currentPage }} of {{ totalPages
-                    }}</span>
-
-                  <button @click="nextPage" :disabled="currentPage === totalPages"
-                    class="px-4 py-2 bg-slate-600 text-white rounded hover:bg-slate-700 disabled:opacity-50">
-                    >
-                  </button>
-            </div>
           </div>
 
           <Spinner v-else />
@@ -201,8 +140,10 @@ import axios from 'axios'
 
 import Sidebar from '../../partials/Sidebar.vue'
 import Header from '../../partials/Header.vue'
+
 import { getListUser } from '@/data/User'
 import { API_BASE_URL } from '../../config'
+import ListTable from '../../components/Helpers/ListTable.vue'
 const sidebarOpen = ref(false)
 const users = ref([])
 const currentPage = ref(1)
@@ -226,12 +167,6 @@ const clearForm = () => {
   form.value.role = ""
   form.value.password = ""
 }
-
-const paginatedUsers = computed(() => {
-  const start = (currentPage.value - 1) * pageSize
-  const end = start + pageSize
-  return users.value.slice(start, end)
-})
 
 // fetch users
 const fetchUsers = async () => {

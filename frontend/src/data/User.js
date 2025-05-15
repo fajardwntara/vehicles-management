@@ -1,7 +1,5 @@
 import { API_BASE_URL } from '../config'
 import axios from 'axios'
-import { useRouter } from 'vue-router'
-const router = useRouter()
 
 /* Get User Profile */
 export const getCurrentUser = async () => {
@@ -21,6 +19,9 @@ export const getCurrentUser = async () => {
         return response.data
 
     } catch (error) {
+        alert("Token has been expired. Please refresh/login again.")
+        sessionStorage.clear()
+        window.location.href = '/login'
         console.error('Failed to fetch users:', error)
     }
 }

@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import VehicleManagement from './pages/Vehicles/VehicleManagement.vue'
 import Login from './pages/Login.vue'
 import User from './pages/User/UserManagement.vue'
+import VehicleManagement from './pages/Vehicles/VehicleManagement.vue'
+import Motor from '@/pages/Vehicles/Managements/Motorcycle.vue'
 
 const routerHistory = createWebHistory()
 
@@ -13,16 +14,21 @@ const router = createRouter({
       redirect: '/login'
     },
     {
-      path: '/vehicle-management',
-      component: VehicleManagement
-    },
-    {
       path: '/login',
       component: Login
     },
     {
       path: '/user',
       component: User
+    },
+    // Vehicles
+    {
+      path: '/vehicle-management',
+      component: VehicleManagement
+    },
+    {
+      path: '/vehicle-management/motor',
+      component: Motor
     },
     {
       path: '/:pathMatch(.*)*',

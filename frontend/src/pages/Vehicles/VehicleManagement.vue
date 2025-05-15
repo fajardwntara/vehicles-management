@@ -23,8 +23,7 @@
                                 </div>
                                 <h3
                                     class="text-lg font-semibold text-gray-800 group-hover:text-slate-600">
-                                    {{
-                                        menu.title }}
+                                    {{ menu.title }}
                                 </h3>
                                 <p class="text-sm text-gray-500">{{ menu.description }}</p>
                             </div>
@@ -33,9 +32,6 @@
                 </div>
             </main>
         </div>
-
-
-
     </div>
 </template>
 
@@ -56,11 +52,11 @@ const menus = [
     {
         title: 'Vehicles',
         description: 'Vehicle inventory and transactions',
-        path: '/vehicles',
+        path: '/vehicle-management/motor',
         icon: Car
     },
     {
-        title: 'Sale & Purchase',
+        title: 'Sales & Purchases',
         description: 'Vehicle inventory and transactions',
         path: '/vehicles',
     },
