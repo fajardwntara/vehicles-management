@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     # apps 
     'users',
     'vehicle_management',
+    'sales_purchases',
 ]
 
 MIDDLEWARE = [

@@ -236,7 +236,6 @@ const nextCarPage = () => {
 
 /* ================================ */
 const handleSubmit = (data) => {
-    console.log("active Tab : ", activeTab)
     if (isEdit.value) {
         if (activeTab.value == "Motorcycles") {
             editMotor(data)
@@ -260,7 +259,7 @@ const clearForm = () => {
 
 const openEditModal = (data) => {
     isEdit.value = true
-    if (activeTab == 'Motorcycles') {
+    if (activeTab.value == 'Motorcycles') {
         motorForm.value = { ...data }
     } else {
         carForm.value = { ...data }

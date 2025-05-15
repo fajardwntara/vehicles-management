@@ -3,38 +3,34 @@ import Login from './pages/Login.vue'
 import User from './pages/User/UserManagement.vue'
 import VehicleManagement from './pages/Vehicles/VehicleManagement.vue'
 import Vehicle from '@/pages/Vehicles/Managements/Vehicle.vue'
-
-const routerHistory = createWebHistory()
+import SalesPurchases from '@/pages/Vehicles/Managements/SalesPurchases.vue'
+import NotFound from '@/pages/NotFound.vue'
 
 const router = createRouter({
-  history: routerHistory,
+  history: createWebHistory(),
   routes: [
-    {
-      path: '/',
-      redirect: '/login'
-    },
-    {
-      path: '/login',
-      component: Login
-    },
-    {
-      path: '/user',
-      component: User
-    },
-    // Vehicles
-    {
-      path: '/vehicle-management',
-      component: VehicleManagement
-    },
-    {
-      path: '/vehicle-management/motor',
-      component: Vehicle
-    },
-    {
-      path: '/:pathMatch(.*)*',
-      redirect: '/login'
-    }
+    { path: '/', redirect: '/login' },
+    { path: '/login', component: Login },
+    { path: '/user', component: User },
+    { path: '/vehicle-management', component: VehicleManagement },
+    { path: '/vehicle-management/vehicle', component: Vehicle },
+    { path: '/vehicle-management/sales-purchases', component: SalesPurchases },
+    { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  const token = sessionStorage.getItem('access_token')
+
+  if (!token && to.path !== '/login') {
+    return next('/login')
+  }
+
+  if (token && to.path === '/login') {
+    return next('/user')
+  }
+
+  next()
 })
 
 export default router

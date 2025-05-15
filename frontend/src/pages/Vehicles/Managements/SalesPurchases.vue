@@ -160,8 +160,8 @@ import ModalForm from '@/components/Helpers/ModalForm.vue'
 
 // Setup
 const token = sessionStorage.getItem('access_token')
-const tabs = ['Motorcycles', 'Cars']
-const activeTab = ref('Motorcycles')
+const tabs = ['Sales', 'Purchases']
+const activeTab = ref('Sales')
 
 // General Setup
 const sidebarOpen = ref(false)

@@ -53,7 +53,7 @@ const menus = [
     {
         title: 'Vehicles',
         description: 'Vehicle management stock and prices',
-        path: '/vehicle-management/motor',
+        path: '/vehicle-management/vehicle',
         icon: Car
     },
     {

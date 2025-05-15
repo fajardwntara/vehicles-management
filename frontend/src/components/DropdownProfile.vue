@@ -1,6 +1,6 @@
 <template>
   <div class="relative inline-flex">
-    <button ref="trigger" class="inline-flex justify-center items-center group" aria-haspopup="true"
+    <button ref="trigger" class="cursor-pointer inline-flex justify-center items-center group" aria-haspopup="true"
       @click.prevent="dropdownOpen = !dropdownOpen" :aria-expanded="dropdownOpen" v-if="user">
 
       <svg class="dark:fill-gray-100" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
