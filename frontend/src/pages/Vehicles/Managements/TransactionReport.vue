@@ -19,10 +19,6 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4 py-8">
                             <div v-for="transaction in transactions" :key="transaction.title"
                                 class="group bg-white dark:bg-gray-200 shadow-md rounded-2xl p-6 hover:shadow-xl transition duration-300">
-                                <div
-                                    class="flex items-center justify-center w-14 h-14 rounded-full bg-slate-100 dark:bg-gray-800 mb-4">
-                                    <component :is="transaction.icon" class="w-6 h-6 text-slate-700 dark:text-white" />
-                                </div>
                                 <h3 class="text-lg font-semibold text-gray-800 group-hover:text-slate-600">
                                     {{ transaction.title }}
                                 </h3>
