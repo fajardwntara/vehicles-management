@@ -1,11 +1,54 @@
 <template>
     <div class="flex h-screen overflow-hidden">
 
+        <!-- Custom Modal -->
+        <!-- <transition name="fade">
+            <div v-if="showModal"
+                class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/20">
+                <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg p-6 animate-fade-in">
+
+                    <h2 class="text-xs sm:text-2xl font-bold text-gray-800 dark:text-white mb-6">
+                        Add New {{ activeTab }}
+                    </h2>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="block" v-for="field in purchaseFields" :key="field.model">
+                            <span class="text-xs">{{ field.label }}</span>
+                            <input v-model="purchaseForm[field.model]" :type="field.type || 'text'"
+                                :placeholder="field.placeholder || field.label" :disabled="field.disabled"
+                                class="text-xs w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600 dark:bg-gray-800 dark:text-white disabled:bg-slate-200 dark:disabled:bg-gray-600" />
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex justify-end space-x-4">
+                        <button @click="onCancel"
+                            class="cursor-pointer text-xs mx-2 px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:text-white">
+                            Cancel
+                        </button>
+                        <button @click="onSubmit" class="cursor-pointer text-xs px-4 py-2 rounded-lg text-white"
+                            :class="submitClass">
+                            {{ submitText }}
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </transition> -->
+
         <ModalForm v-model:visible="showModal" :title="isEdit ? `Edit ${activeTab}` : `Add New ${activeTab}`"
-            :modelValue="activeTab == 'Motorcycles' ? motorForm : carForm"
-            :fields="activeTab == 'Motorcycles' ? motorFields : carFields" :submitText="isEdit ? 'Update' : 'Save'"
+            :modelValue="activeTab == 'Sales' ? saleForm : purchaseForm"
+            :fields="activeTab == 'Sales' ? saleFields : purchaseFields" :submitText="isEdit ? 'Update' : 'Save'"
             :submitClass="isEdit ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-slate-600 hover:bg-slate-700'"
-            @submit="handleSubmit" />
+            @submit="handleSubmit">
+
+            <template #add-input>
+                <div class="block">
+                    <span class="text-xs">Vehicle</span>
+                    <input v-model="purchaseForm.vehicle" placeholder="Choose One" class="text-xs w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600 dark:bg-gray-800 dark:text-white disabled:bg-slate-200 dark:disabled:bg-gray-600" />
+                </div>
+            </template>
+        </ModalForm>
+
 
         <!-- Sidebar -->
         <Sidebar :sidebarOpen="sidebarOpen" @close-sidebar="sidebarOpen = false" />
@@ -45,12 +88,12 @@
                     </div>
 
                     <!-- Body -->
-                    <div class="p-4 shadow-xl bg-white rounded-lg" v-if="activeTab === 'Motorcycles' && motors">
+                    <div class="p-4 shadow-xl bg-white rounded-lg" v-if="activeTab === 'Sales' && sales">
 
-                        <ListTable :data="motors" :currentPage="motorCurrentPage" :pageSize="motorPageSize"
+                        <ListTable :data="sales" :currentPage="motorCurrentPage" :pageSize="motorPageSize"
                             :totalPages="motorTotalPages" :prevPage="prevMotorPage" :nextPage="nextMotorPage"
-                            :columns="['release_year', 'color', 'price', 'stock', 'machine', 'suspenssion_type', 'transmission_type']"
-                            :headerColumns="['Release Year', 'Color', 'Price', 'Stock', 'Machine', 'Suspenssion', 'Transmission']">
+                            :columns="['vehicle_type', 'release_year', 'machine', 'price', 'purchase_date', 'qty', 'status']"
+                            :headerColumns="['Vehicle Type', 'Release Year', 'Machine', 'Price', 'Purchase Date', 'Quantity', 'Status']">
 
                             <template #add-button>
                                 <button @click="showModalAdd"
@@ -91,12 +134,12 @@
 
                     </div>
 
-                    <!-- Car -->
-                    <div v-else-if="activeTab === 'Cars'" class="p-4 shadow-xl bg-white rounded-lg">
-                        <ListTable :data="cars" :currentPage="carCurrentPage" :pageSize="carPageSize" :totalPages="carTotalPages"
-                            :prevPage="prevCarPage" :nextPage="nextCarPage"
-                            :columns="['release_year', 'color', 'price', 'stock', 'machine', 'passenger_cap', 'type']"
-                            :headerColumns="['Release Year', 'Color', 'Price', 'Stock', 'Machine', 'Passenger Capacities', 'Type']">
+                    <!-- Purchases -->
+                    <div v-else-if="activeTab === 'Purchases'" class="p-4 shadow-xl bg-white rounded-lg">
+                        <ListTable :data="purchases" :currentPage="purchaseCurrentPage" :pageSize="purchasePageSize"
+                            :totalPages="purchaseTotalPages" :prevPage="prevPurchasePage" :nextPage="nextPurchasePage"
+                            :columns="['vehicle_type', 'release_year', 'machine', 'purchase_price', 'purchase_date', 'qty', 'status']"
+                            :headerColumns="['Vehicle Type', 'Release Year', 'Machine', 'Purchase Price', 'Purchase Date', 'Quantity', 'Status']">
 
                             <template #add-button>
                                 <button @click="showModalAdd"
@@ -170,11 +213,11 @@ const showModal = ref(false)
 const isEdit = ref(false)
 
 // Motor variables
-const motorCurrentPage = ref(1)
-const motorTotalPages = ref(1)
-const motorPageSize = 5
-const motors = ref([])
-const defaultMotorForm = ref({
+const saleCurrentPage = ref(1)
+const saleTotalPages = ref(1)
+const salePageSize = 5
+const sales = ref([])
+const defaultSaleForm = ref({
     release_year: 0,
     color: '',
     price: 0,
@@ -183,8 +226,8 @@ const defaultMotorForm = ref({
     suspenssion_type: '',
     transmission_type: '',
 })
-const motorForm = ref({ ...defaultMotorForm.value })
-const motorFields = [
+const saleForm = ref({ ...defaultSaleForm.value })
+const saleFields = [
     { model: 'release_year', label: 'Released Year', type: 'number', placeholder: 'Must be > 1900' },
     { model: 'color', label: 'Color' },
     { model: 'price', label: 'Price', type: 'number' },
@@ -193,61 +236,58 @@ const motorFields = [
     { model: 'suspenssion_type', label: 'Suspenssion Type' },
     { model: 'transmission_type', label: 'Transmission Type' }
 ]
-const prevMotorPage = () => {
-  if (motorCurrentPage.value > 1) motorCurrentPage.value--
+const prevSalePage = () => {
+    if (saleCurrentPage.value > 1) saleCurrentPage.value--
 }
 
-const nextMotorPage = () => {
-  if (motorCurrentPage.value < motorTotalPages.value) motorCurrentPage.value++
+const nextSalePage = () => {
+    if (saleCurrentPage.value < saleTotalPages.value) saleCurrentPage.value++
 }
 
 // Cars variables
-const carCurrentPage = ref(1)
-const carTotalPages = ref(1)
-const carPageSize = 5
-const cars = ref([])
-const defaultCarForm = ref({
-    release_year: 0,
-    color: '',
-    price: 0,
-    stock: 0,
-    machine: '',
-    suspenssion_type: '',
-    transmission_type: '',
+const purchaseCurrentPage = ref(1)
+const purchaseTotalPages = ref(1)
+const purchasePageSize = 5
+const purchases = ref([])
+const defaultPurchaseForm = ref({
+    purchase_date: '',
+    seller_name: '',
+    seller_phone: '',
+    purchase_price: 0,
+    qty: 0
 })
-const carForm = ref({ ...defaultCarForm.value })
-const carFields = [
-    { model: 'release_year', label: 'Released Year', type: 'number', placeholder: 'Must be > 1900' },
-    { model: 'color', label: 'Color' },
-    { model: 'price', label: 'Price', type: 'number' },
-    { model: 'stock', label: 'Stock', type: 'number' },
-    { model: 'machine', label: 'Machine' },
-    { model: 'passenger_cap', label: 'Passenger Capacities' },
-    { model: 'type', label: 'Type' }
+const purchaseForm = ref({ ...defaultPurchaseForm.value })
+const purchaseFields = [
+    // { model: 'vehicle', label: 'Vehicle', placeholder: 'Choose one' },
+    { model: 'purchase_date', label: 'Purchase Date', placeholder: "YYYY-MM-DD" },
+    { model: 'seller_name', label: 'Seller Name' },
+    { model: 'seller_phone', label: 'Seller Phone' },
+    { model: 'purchase_price', label: 'Price', type: "Number" },
+    { model: 'qty', label: 'Quantity', type: "Number" },
 ]
 
-const prevCarPage = () => {
-  if (carCurrentPage.value > 1) carCurrentPage.value--
+const prevPurchasePage = () => {
+    if (purchaseCurrentPage.value > 1) purchaseCurrentPage.value--
 }
 
-const nextCarPage = () => {
-  if (carCurrentPage.value < carTotalPages.value) carCurrentPage.value++
+const nextPurchasePage = () => {
+    if (purchaseCurrentPage.value < purchaseTotalPages.value) purchaseCurrentPage.value++
 }
 
 /* ================================ */
 const handleSubmit = (data) => {
     console.log("active Tab : ", activeTab)
     if (isEdit.value) {
-        if (activeTab.value == "Motorcycles") {
-            editMotor(data)
+        if (activeTab.value == "Sales") {
+            editSale(data)
         } else {
-            editCar(data)
+            editPurchase(data)
         }
     } else {
-        if (activeTab.value == "Motorcycles") {
-            addMotor(data)
+        if (activeTab.value == "Purchases") {
+            addSale(data)
         } else {
-            addCar(data)
+            addPurchase(data)
         }
     }
 
@@ -255,15 +295,15 @@ const handleSubmit = (data) => {
 
 // Clear Form
 const clearForm = () => {
-    motorForm.value = { ...defaultMotorForm.value }
+    saleForm.value = { ...defaultSaleForm.value }
 }
 
 const openEditModal = (data) => {
     isEdit.value = true
-    if (activeTab == 'Motorcycles') {
-        motorForm.value = { ...data }
+    if (activeTab.value == 'Sales') {
+        saleForm.value = { ...data }
     } else {
-        carForm.value = { ...data }
+        purchaseForm.value = { ...data }
     }
     showModal.value = true
 }
@@ -274,17 +314,17 @@ const showModalAdd = () => {
 }
 
 /* ========== Functions =========== */
-const fetchData = async (vehicleType, page, size, targetListRef, totalPageRef, targetPageSize) => {
+const fetchData = async (type, page, size, targetListRef, totalPageRef, targetPageSize) => {
     loading.value = true
     try {
-        const response = await axios.get(`${API_BASE_URL}/api/vehicles/${vehicleType}/lists`, {
+        const response = await axios.get(`${API_BASE_URL}/api/sales-purchases/${type}/lists`, {
             params: { page, size },
             headers: { Authorization: `Bearer ${token}` }
         })
         targetListRef.value = response.data
         totalPageRef.value = Math.ceil(response.data.length / targetPageSize)
     } catch (error) {
-        console.error(`Error fetching ${vehicleType}: `, error)
+        console.error(`Error fetching ${type}: `, error)
     } finally {
         loading.value = false
     }
@@ -354,36 +394,36 @@ const deleteData = async (vehicleType, id, fetchFunc) => {
 }
 
 /* Motors */
-const fetchMotors = () => fetchData('motorcycle', motorCurrentPage.value, motorPageSize, motors, motorTotalPages, motorPageSize)
+// const fetchMotors = () => fetchData('motorcycle', motorCurrentPage.value, motorPageSize, motors, motorTotalPages, motorPageSize)
 
-const addMotor = (data) => addData('motorcycle', data, fetchMotors)
+// const addMotor = (data) => addData('motorcycle', data, fetchMotors)
 
-const editMotor = (data) => editData('motorcycle', data, fetchMotors)
+// const editMotor = (data) => editData('motorcycle', data, fetchMotors)
 
-const deleteMotor = (id) => deleteData('motorcycle', id, fetchMotors)
+// const deleteMotor = (id) => deleteData('motorcycle', id, fetchMotors)
 
-/* Cars */
-const fetchCars = () => fetchData('car', carCurrentPage.value, carPageSize, cars, carTotalPages, carPageSize)
+// /* Purchase */
+const fetchPurchases = () => fetchData('purchases', purchaseCurrentPage.value, purchasePageSize, purchases, purchaseTotalPages, purchasePageSize)
 
-const addCar = (data) => addData('car', data, fetchCars)
+// const addCar = (data) => addData('car', data, fetchCars)
 
-const editCar = (data) => editData('car', data, fetchCars)
+// const editCar = (data) => editData('car', data, fetchCars)
 
-const deleteCar = (id) => deleteData('car', id, fetchCars)
+// const deleteCar = (id) => deleteData('car', id, fetchCars)
 
 
 /* Configs */
 onMounted(() => {
-  fetchMotors()
-  fetchCars()
+    //   fetchMotors()
+    fetchPurchases()
 })
 
-watch(motorCurrentPage, () => {
-  fetchMotors()
-})
+// watch(motorCurrentPage, () => {
+//   fetchMotors()
+// })
 
-watch(carCurrentPage, () => {
-  fetchCars()
+watch(purchaseCurrentPage, () => {
+    fetchPurchases()
 })
 
 </script>

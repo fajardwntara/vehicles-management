@@ -35,7 +35,7 @@ class Motorcycle(Vehicle):
         verbose_name_plural = 'Motorcycles'
     
     def __str__(self):
-        return f"{self.uuid} - {self.machine}"
+        return f"{self.machine} - {self.suspenssion_type} - {self.transmission_type}"
 
 class Car(Vehicle):
     
@@ -48,4 +48,4 @@ class Car(Vehicle):
         verbose_name_plural = 'Cars'
     
     def __str__(self):
-        return f"{self.uuid} - {self.type} ({self.passenger_cap} passengers)"
+        return f"{self.machine} - {self.type} ({self.passenger_cap} passengers)"

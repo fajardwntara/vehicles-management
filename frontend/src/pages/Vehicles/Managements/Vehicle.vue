@@ -255,6 +255,7 @@ const handleSubmit = (data) => {
 // Clear Form
 const clearForm = () => {
     motorForm.value = { ...defaultMotorForm.value }
+    carForm.value = { ...defaultCarForm.value }
 }
 
 const openEditModal = (data) => {
