@@ -176,6 +176,15 @@
                                             d="M24 6C14.1 6 6 14.1 6 24s8.1 18 18 18s18-8.1 18-18S33.9 6 24 6m0 4c3.1 0 6 1.1 8.4 2.8L12.8 32.4C11.1 30 10 27.1 10 24c0-7.7 6.3-14 14-14m0 28c-3.1 0-6-1.1-8.4-2.8l19.6-19.6C36.9 18 38 20.9 38 24c0 7.7-6.3 14-14 14" />
                                     </svg>
                                 </button>
+
+                                <button @click="deleteSale(data)"
+                                    class="shadow-xl bg-slate-100 cursor-pointer hover:bg-slate-200 p-2 text-white rounded-lg mx-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                                        <path fill="none" stroke="#e30000" stroke-linecap="round"
+                                            stroke-linejoin="round" stroke-width="1.5"
+                                            d="m18 9l-.84 8.398c-.127 1.273-.19 1.909-.48 2.39a2.5 2.5 0 0 1-1.075.973C15.098 21 14.46 21 13.18 21h-2.36c-1.279 0-1.918 0-2.425-.24a2.5 2.5 0 0 1-1.076-.973c-.288-.48-.352-1.116-.48-2.389L6 9m7.5 6.5v-5m-3 5v-5m-6-4h4.615m0 0l.386-2.672c.112-.486.516-.828.98-.828h3.038c.464 0 .867.342.98.828l.386 2.672m-5.77 0h5.77m0 0H19.5" />
+                                    </svg>
+                                </button>
                             </template>
 
                         </ListTable>
@@ -230,6 +239,15 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48">
                                         <path fill="#d50000"
                                             d="M24 6C14.1 6 6 14.1 6 24s8.1 18 18 18s18-8.1 18-18S33.9 6 24 6m0 4c3.1 0 6 1.1 8.4 2.8L12.8 32.4C11.1 30 10 27.1 10 24c0-7.7 6.3-14 14-14m0 28c-3.1 0-6-1.1-8.4-2.8l19.6-19.6C36.9 18 38 20.9 38 24c0 7.7-6.3 14-14 14" />
+                                    </svg>
+                                </button>
+
+                                <button @click="deletePurchase(data)"
+                                    class="shadow-xl bg-slate-100 cursor-pointer hover:bg-slate-200 p-2 text-white rounded-lg mx-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                                        <path fill="none" stroke="#e30000" stroke-linecap="round"
+                                            stroke-linejoin="round" stroke-width="1.5"
+                                            d="m18 9l-.84 8.398c-.127 1.273-.19 1.909-.48 2.39a2.5 2.5 0 0 1-1.075.973C15.098 21 14.46 21 13.18 21h-2.36c-1.279 0-1.918 0-2.425-.24a2.5 2.5 0 0 1-1.076-.973c-.288-.48-.352-1.116-.48-2.389L6 9m7.5 6.5v-5m-3 5v-5m-6-4h4.615m0 0l.386-2.672c.112-.486.516-.828.98-.828h3.038c.464 0 .867.342.98.828l.386 2.672m-5.77 0h5.77m0 0H19.5" />
                                     </svg>
                                 </button>
                             </template>
@@ -391,10 +409,10 @@ const clearForm = () => {
 
 const openEditModal = (data) => {
 
-    if (data.status == 'confirm') { 
+    if (data.status == 'confirm') {
         alert('You can only cancel the data')
         return
-    } else if(data.status == 'cancel'){
+    } else if (data.status == 'cancel') {
         alert('Data has already been canceled')
         return
     }
@@ -550,7 +568,7 @@ const confirmData = async (type, data, fetchFunc) => {
         alert('Data updated successfully.')
         fetchFunc()
     } catch (error) {
-        alert('Failed to update data')
+        alert('Failed to confirm data.\nMake sure your quantity is not ouf of stock\nYou can purchase for adding the stock with the product you selected.')
         console.error(error)
     }
 }
@@ -609,6 +627,33 @@ const cancelData = async (type, data, fetchFunc) => {
     }
 }
 
+const deleteData = async (type, data, fetchFunc) => {
+    const confirmed = confirm('Are you sure you want to delete this data?')
+    if (!confirmed) return
+
+    if (!token) {
+        alert('Unauthorized: No access token found.')
+        return
+    }
+
+    if (data.status != 'draft') {
+        alert("Only 'draft' status that can be deleted.")
+        return
+    }
+
+    try {
+        await axios.delete(`${API_BASE_URL}/api/sales-purchases/${type}/delete/${data.id}/`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        alert('Data deleted successfully.')
+        fetchFunc()
+    } catch (error) {
+        alert('Failed to delete data')
+        console.error(error)
+    }
+}
+
+
 
 /* Motors */
 const fetchSales = () => fetchData('sales', saleCurrentPage.value, salePageSize, sales, saleTotalPages, salePageSize)
@@ -621,6 +666,8 @@ const confirmSale = (data) => confirmData('sales', data, fetchSales)
 
 const cancelSale = (data) => cancelData('sales', data, fetchSales)
 
+const deleteSale = (data) => deleteData('sales', data, fetchSales)
+
 // /* Purchase */
 const fetchPurchases = () => fetchData('purchases', purchaseCurrentPage.value, purchasePageSize, purchases, purchaseTotalPages, purchasePageSize)
 
@@ -631,6 +678,8 @@ const editPurchase = (data) => editData('purchases', data, fetchPurchases)
 const confirmPurchase = (data) => confirmData('purchases', data, fetchPurchases)
 
 const cancelPurchase = (data) => cancelData('purchases', data, fetchPurchases)
+
+const deletePurchase = (data) => deleteData('purchases', data, fetchPurchases)
 
 /* Configs */
 onMounted(() => {

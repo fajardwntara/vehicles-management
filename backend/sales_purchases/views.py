@@ -7,6 +7,8 @@ from django.db.models import Sum
 from .models import Sale, Purchase
 from .serializers import SaleSerializer, PurchaseSerializer
 from vehicle_management.models import Vehicle, Car, Motorcycle
+from django.shortcuts import get_object_or_404
+
 
 # --- SALE ---
 class SaleListView(APIView):
@@ -88,6 +90,14 @@ class SaleUpdateView(APIView):
                 "data": serializer.data
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class SaleDeleteAPIView(APIView):
+    def delete(self, request, pk):
+        sale = get_object_or_404(Sale, pk=pk)
+        if sale.status != 'draft':
+            return Response({'error': 'Only draft sales can be deleted.'}, status=status.HTTP_400_BAD_REQUEST)
+        sale.delete()
+        return Response({'message': 'Sale deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
 
 # --- PURCHASE ---
 class PurchaseListView(APIView):
@@ -189,3 +199,13 @@ class TotalTransactionView(APIView):
             "total_purchase": total_purchase,
             "total_income": total_income
         })
+    
+
+class PurchaseDeleteAPIView(APIView):
+    def delete(self, request, pk):
+        purchase = get_object_or_404(Purchase, pk=pk)
+        if purchase.status != 'draft':
+            return Response({'error': 'Only draft purchases can be deleted.'}, status=status.HTTP_400_BAD_REQUEST)
+        purchase.delete()
+        return Response({'message': 'Purchase deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+

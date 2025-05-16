@@ -46,8 +46,15 @@ class PurchaseSerializer(serializers.ModelSerializer):
         if previous_status == 'cancel':
             raise serializers.ValidationError("Data with status 'cancel' cannot be updated.")
 
-        if previous_status != new_status and new_status in ['cancel', 'confirm']:
-            vehicle.stock += qty if new_status == 'confirm' else -qty
+        if previous_status != 'confirm' and new_status == 'confirm':
+            if vehicle.stock < qty:
+                raise serializers.ValidationError(f"Insufficient stock. Available stock: {vehicle.stock}")
+
+            vehicle.stock -= qty
+            vehicle.save()
+
+        elif previous_status == 'confirm' and new_status == 'cancel':
+            vehicle.stock += qty
             vehicle.save()
 
         return super().update(instance, validated_data)

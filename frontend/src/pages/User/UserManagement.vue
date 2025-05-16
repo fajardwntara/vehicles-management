@@ -79,7 +79,7 @@
 
           <!-- Body -->
           <div class="p-4 shadow-xl bg-white rounded-lg" v-if="users">
-            
+
             <ListTable :data="users" :currentPage="currentPage" :pageSize="pageSize" :totalPages="totalPages"
               :prevPage="prevPage" :nextPage="nextPage" :columns="['username', 'role', 'email']"
               :headerColumns="['Username', 'Role', 'Email', 'Actions']">
@@ -135,11 +135,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import axios from 'axios'
 
 import Sidebar from '../../partials/Sidebar.vue'
 import Header from '../../partials/Header.vue'
+import { getCurrentUser } from '@/data/User'
 
 import { getListUser } from '@/data/User'
 import { API_BASE_URL } from '../../config'
@@ -168,6 +169,8 @@ const clearForm = () => {
   form.value.password = ""
 }
 
+const currentUserRole = ref('')
+
 // fetch users
 const fetchUsers = async () => {
   try {
@@ -193,6 +196,16 @@ const nextPage = () => {
 
 // Add user
 const addUser = async () => {
+
+  if (
+    !form.value.username.trim() ||
+    !form.value.email.trim() ||
+    !form.value.role.trim() ||
+    !form.value.password.trim()
+  ) {
+    alert("Semua field wajib diisi!");
+    return;
+  }
 
   try {
     const token = sessionStorage.getItem('access_token')
@@ -234,6 +247,22 @@ const openEditModal = (user) => {
 
 // Update user
 const editUser = async () => {
+  if (currentUserRole.value != 'admin') {
+    alert("Only Admin role can use this action.")
+    return
+  }
+
+  if (
+    !form.value.username.trim() ||
+    !form.value.email.trim() ||
+    !form.value.role.trim() ||
+    !form.value.password.trim()
+  ) {
+    alert("Semua field wajib diisi!");
+    return;
+  }
+
+
   try {
     const token = sessionStorage.getItem('access_token')
     if (!token) {
@@ -273,6 +302,10 @@ const editUser = async () => {
 
 // Delete user
 const deleteUser = async (id) => {
+  if (currentUserRole.value != 'admin') {
+    alert("Only Admin role can use this action.")
+    return
+  }
   const confirmed = confirm("Are you sure you want to delete this user?");
   if (!confirmed) return;
 
@@ -297,7 +330,11 @@ const deleteUser = async (id) => {
   }
 };
 
-onMounted(fetchUsers)
+onMounted(async () => {
+  fetchUsers()
+  const currentUser = await getCurrentUser()
+  currentUserRole.value = currentUser.role
+})
 watch(currentPage, fetchUsers)
 
 </script>

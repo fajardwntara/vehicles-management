@@ -356,18 +356,98 @@ const deleteData = async (vehicleType, id, fetchFunc) => {
 /* Motors */
 const fetchMotors = () => fetchData('motorcycle', motorCurrentPage.value, motorPageSize, motors, motorTotalPages, motorPageSize)
 
-const addMotor = (data) => addData('motorcycle', data, fetchMotors)
+const addMotor = (data) => {
+    if (
+        !data.name?.trim() ||
+        !data.release_year ||
+        !data.color?.trim() ||
+        !data.price ||
+        !data.machine?.trim() ||
+        !data.suspenssion_type?.trim() ||
+        !data.transmission_type?.trim()
+    ) {
+        alert('All of fields must be filled.');
+        return;
+    }
 
-const editMotor = (data) => editData('motorcycle', data, fetchMotors)
+    if (data.release_year <= 1900) {
+        alert('Release Year must be greater than 1900')
+        return
+    }
+
+    addData('motorcycle', data, fetchMotors)
+}
+
+const editMotor = (data) => {
+  if (
+    !data.name?.trim() ||
+    !data.release_year ||
+    !data.color?.trim() ||
+    !data.price ||
+    !data.machine?.trim() ||
+    !data.suspenssion_type?.trim() ||
+    !data.transmission_type?.trim()
+  ) {
+    alert('All fields must be filled.')
+    return
+  }
+
+  if (data.release_year <= 1900) {
+    alert('Release Year must be greater than 1900.')
+    return
+  }
+
+  editData('motorcycle', data, fetchMotors)
+}
 
 const deleteMotor = (id) => deleteData('motorcycle', id, fetchMotors)
 
 /* Cars */
 const fetchCars = () => fetchData('car', carCurrentPage.value, carPageSize, cars, carTotalPages, carPageSize)
 
-const addCar = (data) => addData('car', data, fetchCars)
+const addCar = (data) => {
+  if (
+    !data.name?.trim() ||
+    !data.release_year ||
+    !data.color?.trim() ||
+    !data.price ||
+    !data.machine?.trim() ||
+    !data.passenger_cap ||
+    !data.type?.trim()
+  ) {
+    alert('All fields must be filled.')
+    return
+  }
 
-const editCar = (data) => editData('car', data, fetchCars)
+  if (data.release_year <= 1900) {
+    alert('Release Year must be greater than 1900.')
+    return
+  }
+
+  addData('car', data, fetchCars)
+}
+
+const editCar = (data) => {
+  if (
+    !data.name?.trim() ||
+    !data.release_year ||
+    !data.color?.trim() ||
+    !data.price ||
+    !data.machine?.trim() ||
+    !data.passenger_cap ||
+    !data.type?.trim()
+  ) {
+    alert('All fields must be filled.')
+    return
+  }
+
+  if (data.release_year <= 1900) {
+    alert('Release Year must be greater than 1900.')
+    return
+  }
+
+  editData('car', data, fetchCars)
+}
 
 const deleteCar = (id) => deleteData('car', id, fetchCars)
 
