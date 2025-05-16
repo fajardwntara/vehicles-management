@@ -49,8 +49,8 @@
 
                         <ListTable :data="motors" :currentPage="motorCurrentPage" :pageSize="motorPageSize"
                             :totalPages="motorTotalPages" :prevPage="prevMotorPage" :nextPage="nextMotorPage"
-                            :columns="['release_year', 'color', 'price', 'stock', 'machine', 'suspenssion_type', 'transmission_type']"
-                            :headerColumns="['Release Year', 'Color', 'Price', 'Stock', 'Machine', 'Suspenssion', 'Transmission']">
+                            :columns="['name', 'release_year', 'color', 'price', 'stock', 'machine', 'suspenssion_type', 'transmission_type']"
+                            :headerColumns="['Name', 'Release Year', 'Color', 'Price', 'Stock', 'Machine', 'Suspenssion', 'Transmission']">
 
                             <template #add-button>
                                 <button @click="showModalAdd"
@@ -93,10 +93,10 @@
 
                     <!-- Car -->
                     <div v-else-if="activeTab === 'Cars'" class="p-4 shadow-xl bg-white rounded-lg">
-                        <ListTable :data="cars" :currentPage="carCurrentPage" :pageSize="carPageSize" :totalPages="carTotalPages"
-                            :prevPage="prevCarPage" :nextPage="nextCarPage"
-                            :columns="['release_year', 'color', 'price', 'stock', 'machine', 'passenger_cap', 'type']"
-                            :headerColumns="['Release Year', 'Color', 'Price', 'Stock', 'Machine', 'Passenger Capacities', 'Type']">
+                        <ListTable :data="cars" :currentPage="carCurrentPage" :pageSize="carPageSize"
+                            :totalPages="carTotalPages" :prevPage="prevCarPage" :nextPage="nextCarPage"
+                            :columns="['name', 'release_year', 'color', 'price', 'stock', 'machine', 'passenger_cap', 'type']"
+                            :headerColumns="['Name', 'Release Year', 'Color', 'Price', 'Stock', 'Machine', 'Passenger Capacities', 'Type']">
 
                             <template #add-button>
                                 <button @click="showModalAdd"
@@ -175,30 +175,30 @@ const motorTotalPages = ref(1)
 const motorPageSize = 5
 const motors = ref([])
 const defaultMotorForm = ref({
+    name: '',
     release_year: 0,
     color: '',
     price: 0,
-    stock: 0,
     machine: '',
     suspenssion_type: '',
     transmission_type: '',
 })
 const motorForm = ref({ ...defaultMotorForm.value })
 const motorFields = [
+    { model: 'name', label: 'Name' },
     { model: 'release_year', label: 'Released Year', type: 'number', placeholder: 'Must be > 1900' },
     { model: 'color', label: 'Color' },
     { model: 'price', label: 'Price', type: 'number' },
-    { model: 'stock', label: 'Stock', type: 'number' },
     { model: 'machine', label: 'Machine' },
     { model: 'suspenssion_type', label: 'Suspenssion Type' },
     { model: 'transmission_type', label: 'Transmission Type' }
 ]
 const prevMotorPage = () => {
-  if (motorCurrentPage.value > 1) motorCurrentPage.value--
+    if (motorCurrentPage.value > 1) motorCurrentPage.value--
 }
 
 const nextMotorPage = () => {
-  if (motorCurrentPage.value < motorTotalPages.value) motorCurrentPage.value++
+    if (motorCurrentPage.value < motorTotalPages.value) motorCurrentPage.value++
 }
 
 // Cars variables
@@ -207,31 +207,31 @@ const carTotalPages = ref(1)
 const carPageSize = 5
 const cars = ref([])
 const defaultCarForm = ref({
+    name: '',
     release_year: 0,
     color: '',
     price: 0,
-    stock: 0,
     machine: '',
     suspenssion_type: '',
     transmission_type: '',
 })
 const carForm = ref({ ...defaultCarForm.value })
 const carFields = [
+    { model: 'name', label: 'Name' },
     { model: 'release_year', label: 'Released Year', type: 'number', placeholder: 'Must be > 1900' },
     { model: 'color', label: 'Color' },
     { model: 'price', label: 'Price', type: 'number' },
-    { model: 'stock', label: 'Stock', type: 'number' },
     { model: 'machine', label: 'Machine' },
     { model: 'passenger_cap', label: 'Passenger Capacities' },
     { model: 'type', label: 'Type' }
 ]
 
 const prevCarPage = () => {
-  if (carCurrentPage.value > 1) carCurrentPage.value--
+    if (carCurrentPage.value > 1) carCurrentPage.value--
 }
 
 const nextCarPage = () => {
-  if (carCurrentPage.value < carTotalPages.value) carCurrentPage.value++
+    if (carCurrentPage.value < carTotalPages.value) carCurrentPage.value++
 }
 
 /* ================================ */
@@ -374,15 +374,15 @@ const deleteCar = (id) => deleteData('car', id, fetchCars)
 
 /* Configs */
 onMounted(() => {
-  fetchMotors()
-  fetchCars()
+    fetchMotors()
+    fetchCars()
 })
 
 watch(motorCurrentPage, () => {
-  fetchMotors()
+    fetchMotors()
 })
 
 watch(carCurrentPage, () => {
-  fetchCars()
+    fetchCars()
 })
 </script>

@@ -22,7 +22,7 @@
 
                     <td v-for="column in columns" :key="column.model"
                         class="px-6 py-4 text-xs whitespace-nowrap dark:bg-slate-50 dark:text-gray-700">
-                        {{ formatValue(column, data[column]) }}
+                        {{ formatValue(column, data[column], data) }}
                     </td>
 
                     <td class="px-6 py-4 whitespace-nowrap dark:bg-slate-50">
@@ -69,13 +69,11 @@ const props = defineProps({
     nextPage: Function,
 })
 
-const formatValue = (column, value) => {
-    switch (column) {
-        case 'price':
-            return formatValueRupiah(value)
-        default:
-            return value
+const formatValue = (column, value, data) => {
+    if (typeof value === 'number' && column.toLowerCase().includes('price')) {
+        return formatValueRupiah(value)
     }
+    return value
 }
 
 const paginatedData = computed(() => {

@@ -19,7 +19,7 @@
                 class="text-xs w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600 dark:bg-gray-800 dark:text-white disabled:bg-slate-200 dark:disabled:bg-gray-600"
               />
             </div>
-            <slot name="add-input" :field="field" :form="form"></slot>
+            <slot name="add-input" :form="form"></slot>
           </div>
   
           <div class="mt-6 flex justify-end space-x-4">

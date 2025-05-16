@@ -1,50 +1,66 @@
 <template>
     <div class="flex h-screen overflow-hidden">
-
-        <!-- Custom Modal -->
-        <!-- <transition name="fade">
-            <div v-if="showModal"
+        <!-- Custom Modal for Vehicle -->
+        <transition name="fade">
+            <div v-if="vehicleModal"
                 class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/20">
-                <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg p-6 animate-fade-in">
+                <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-3xl p-6 animate-fade-in">
+                    <!-- Header Modal -->
+                    <div class="flex items-center justify-between mb-4">
+                        <h1 class="text-base font-semibold text-gray-800 dark:text-white">
+                            Choose the Vehicle
+                        </h1>
+                        <button @click="closeVehicleModal" class="text-gray-500 hover:text-slate-600 text-lg font-bold">
+                            &times;
+                        </button>
+                    </div>
 
-                    <h2 class="text-xs sm:text-2xl font-bold text-gray-800 dark:text-white mb-6">
-                        Add New {{ activeTab }}
-                    </h2>
+                    <!-- Scrollable Content -->
+                    <div class="overflow-y-auto max-h-[60vh]">
+                        <!-- Table Header -->
+                        <div
+                            class="text-center grid grid-cols-5 gap-2 text-xs font-semibold text-slate-800 dark:text-gray-300 border-b pb-2 mb-2">
+                            <div>Type</div>
+                            <div>Name</div>
+                            <div>Machine</div>
+                            <div>Year</div>
+                            <div>Price</div>
+                        </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="block" v-for="field in purchaseFields" :key="field.model">
-                            <span class="text-xs">{{ field.label }}</span>
-                            <input v-model="purchaseForm[field.model]" :type="field.type || 'text'"
-                                :placeholder="field.placeholder || field.label" :disabled="field.disabled"
-                                class="text-xs w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600 dark:bg-gray-800 dark:text-white disabled:bg-slate-200 dark:disabled:bg-gray-600" />
+                        <!-- Table Rows -->
+                        <div v-for="vehicle in vehicleData" :key="vehicle.id" @click="selectVehicle(vehicle)"
+                            class="text-center grid grid-cols-5 gap-2 text-xs items-center border rounded-lg px-4 py-2 mb-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                            <div class="text-gray-600 dark:text-white">{{ vehicle.vehicle_type }}</div>
+                            <div class="text-gray-600 dark:text-white">{{ vehicle.name }}</div>
+                            <div class="text-gray-600 dark:text-white">{{ vehicle.machine }}</div>
+                            <div class="text-gray-600 dark:text-white">{{ vehicle.release_year }}</div>
+                            <div class="text-gray-600 dark:text-white">{{ vehicle.price }}</div>
                         </div>
                     </div>
-
-                    <div class="mt-6 flex justify-end space-x-4">
-                        <button @click="onCancel"
-                            class="cursor-pointer text-xs mx-2 px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:text-white">
-                            Cancel
-                        </button>
-                        <button @click="onSubmit" class="cursor-pointer text-xs px-4 py-2 rounded-lg text-white"
-                            :class="submitClass">
-                            {{ submitText }}
-                        </button>
-                    </div>
-
                 </div>
             </div>
-        </transition> -->
+        </transition>
 
         <ModalForm v-model:visible="showModal" :title="isEdit ? `Edit ${activeTab}` : `Add New ${activeTab}`"
-            :modelValue="activeTab == 'Sales' ? saleForm : purchaseForm"
+            :modelView="activeTab == 'Sales' ? saleForm : purchaseForm"
             :fields="activeTab == 'Sales' ? saleFields : purchaseFields" :submitText="isEdit ? 'Update' : 'Save'"
             :submitClass="isEdit ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-slate-600 hover:bg-slate-700'"
             @submit="handleSubmit">
 
             <template #add-input>
                 <div class="block">
-                    <span class="text-xs">Vehicle</span>
-                    <input v-model="purchaseForm.vehicle" placeholder="Choose One" class="text-xs w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600 dark:bg-gray-800 dark:text-white disabled:bg-slate-200 dark:disabled:bg-gray-600" />
+                    <button @click="showVehicleModal"
+                        class="cursor-pointer text-xs bg-slate-700 text-white px-4 py-2 rounded-lg hover:bg-slate-800 transition">
+                        Choose Vehicle
+                    </button>
+
+                    <div class="mt-2 text-xs text-gray-700 dark:text-white">
+                        <div class="font-medium">Selected:</div>
+                        <div>
+                            <span v-if="selectedVehicleLabel">{{ selectedVehicleLabel }}</span>
+                            <span v-else class="italic text-gray-400">Not selected yet</span>
+                        </div>
+                    </div>
                 </div>
             </template>
         </ModalForm>
@@ -90,7 +106,7 @@
                     <!-- Body -->
                     <div class="p-4 shadow-xl bg-white rounded-lg" v-if="activeTab === 'Sales' && sales">
 
-                        <ListTable :data="sales" :currentPage="motorCurrentPage" :pageSize="motorPageSize"
+                        <!-- <ListTable :data="sales" :currentPage="motorCurrentPage" :pageSize="motorPageSize"
                             :totalPages="motorTotalPages" :prevPage="prevMotorPage" :nextPage="nextMotorPage"
                             :columns="['vehicle_type', 'release_year', 'machine', 'price', 'purchase_date', 'qty', 'status']"
                             :headerColumns="['Vehicle Type', 'Release Year', 'Machine', 'Price', 'Purchase Date', 'Quantity', 'Status']">
@@ -130,7 +146,7 @@
                                 </button>
                             </template>
 
-                        </ListTable>
+                        </ListTable> -->
 
                     </div>
 
@@ -138,8 +154,8 @@
                     <div v-else-if="activeTab === 'Purchases'" class="p-4 shadow-xl bg-white rounded-lg">
                         <ListTable :data="purchases" :currentPage="purchaseCurrentPage" :pageSize="purchasePageSize"
                             :totalPages="purchaseTotalPages" :prevPage="prevPurchasePage" :nextPage="nextPurchasePage"
-                            :columns="['vehicle_type', 'release_year', 'machine', 'purchase_price', 'purchase_date', 'qty', 'status']"
-                            :headerColumns="['Vehicle Type', 'Release Year', 'Machine', 'Purchase Price', 'Purchase Date', 'Quantity', 'Status']">
+                            :columns="['vehicle_type', 'name', 'release_year', 'machine', 'purchase_price', 'purchase_date', 'qty', 'status']"
+                            :headerColumns="['Type', 'Name', 'Release Year', 'Machine', 'Purchase Price', 'Purchase Date', 'Quantity', 'Status']">
 
                             <template #add-button>
                                 <button @click="showModalAdd"
@@ -152,6 +168,18 @@
                             </template>
 
                             <template #button="{ data }">
+                                <button @click="confirmPurchase(data)"
+                                    class="bg-slate-100 cursor-pointer hover:bg-slate-200 shadow-xl p-2 text-white rounded-lg mx-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                                        <g fill="none" stroke="#0ed700" stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="2">
+                                            <path
+                                                d="M3 12c0 -4.97 4.03 -9 9 -9c4.97 0 9 4.03 9 9c0 4.97 -4.03 9 -9 9c-4.97 0 -9 -4.03 -9 -9Z" />
+                                            <path d="M8 12l3 3l5 -5" />
+                                        </g>
+                                    </svg>
+                                </button>
+
                                 <button @click="openEditModal(data)"
                                     class="bg-slate-100 cursor-pointer hover:bg-slate-200 shadow-xl p-2 text-white rounded-lg mx-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
@@ -165,14 +193,12 @@
                                     </svg>
                                 </button>
 
-                                <button @click="deleteCar(data.id)"
+                                <button @click="cancelPurchase(data.id)"
                                     class="shadow-xl bg-slate-100 cursor-pointer hover:bg-slate-200 p-2 text-white rounded-lg mx-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                        class="fill-red-500">
-                                        <path
-                                            d="M2 5.27L3.28 4L5 5.72l.28.28l1 1l2 2L16 16.72l2 2l2 2L18.73 22l-1.46-1.46c-.34.29-.77.46-1.27.46H8c-1.1 0-2-.9-2-2V9.27zM8 19h7.73L8 11.27zM18 7v9.18l-2-2V9h-5.18l-2-2zm-2.5-3H19v2H7.82l-2-2H8.5l1-1h5z" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48">
+                                        <path fill="#d50000"
+                                            d="M24 6C14.1 6 6 14.1 6 24s8.1 18 18 18s18-8.1 18-18S33.9 6 24 6m0 4c3.1 0 6 1.1 8.4 2.8L12.8 32.4C11.1 30 10 27.1 10 24c0-7.7 6.3-14 14-14m0 28c-3.1 0-6-1.1-8.4-2.8l19.6-19.6C36.9 18 38 20.9 38 24c0 7.7-6.3 14-14 14" />
                                     </svg>
-
                                 </button>
                             </template>
 
@@ -194,7 +220,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import axios from 'axios'
-
+import moment from 'moment'
 import Sidebar from '@/partials/Sidebar.vue'
 import Header from '@/partials/Header.vue'
 import ListTable from '@/components/Helpers/ListTable.vue'
@@ -211,6 +237,39 @@ const sidebarOpen = ref(false)
 const loading = ref(false)
 const showModal = ref(false)
 const isEdit = ref(false)
+const vehicleModal = ref(false)
+const vehicleData = ref([])
+const selectedVehicleLabel = ref('')
+const selectVehicleID = ref(-1)
+
+const fetchVehicles = async () => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/api/vehicles/lists`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        vehicleData.value = response.data
+    } catch (error) {
+        console.error(`Error fetching ${type}: `, error)
+    } finally {
+        loading.value = false
+    }
+}
+
+const showVehicleModal = () => {
+    showModal.value = false
+    vehicleModal.value = true
+}
+
+const closeVehicleModal = () => {
+    showModal.value = true
+    vehicleModal.value = false
+}
+
+function selectVehicle(vehicle) {
+    selectVehicleID.value = vehicle.id
+    selectedVehicleLabel.value = `${vehicle.vehicle_type} - ${vehicle.name} - ${vehicle.release_year}`
+    showModal.value = true
+}
 
 // Motor variables
 const saleCurrentPage = ref(1)
@@ -218,23 +277,17 @@ const saleTotalPages = ref(1)
 const salePageSize = 5
 const sales = ref([])
 const defaultSaleForm = ref({
-    release_year: 0,
-    color: '',
-    price: 0,
-    stock: 0,
-    machine: '',
-    suspenssion_type: '',
-    transmission_type: '',
+    sale_date: moment().format('YYYY-MM-DDTHH:mm'),
+    buyer_name: '',
+    buyer_phone: '',
+    qty: 0
 })
 const saleForm = ref({ ...defaultSaleForm.value })
 const saleFields = [
-    { model: 'release_year', label: 'Released Year', type: 'number', placeholder: 'Must be > 1900' },
-    { model: 'color', label: 'Color' },
-    { model: 'price', label: 'Price', type: 'number' },
-    { model: 'stock', label: 'Stock', type: 'number' },
-    { model: 'machine', label: 'Machine' },
-    { model: 'suspenssion_type', label: 'Suspenssion Type' },
-    { model: 'transmission_type', label: 'Transmission Type' }
+    { model: 'sale_date', label: 'Purchase Date', placeholder: "YYYY-MM-DD", type: "Date" },
+    { model: 'buyer_name', label: 'Seller Name' },
+    { model: 'buyer_phone', label: 'Seller Phone' },
+    { model: 'qty', label: 'Quantity', type: "Number" },
 ]
 const prevSalePage = () => {
     if (saleCurrentPage.value > 1) saleCurrentPage.value--
@@ -244,13 +297,13 @@ const nextSalePage = () => {
     if (saleCurrentPage.value < saleTotalPages.value) saleCurrentPage.value++
 }
 
-// Cars variables
+// Purchase variables
 const purchaseCurrentPage = ref(1)
 const purchaseTotalPages = ref(1)
 const purchasePageSize = 5
 const purchases = ref([])
 const defaultPurchaseForm = ref({
-    purchase_date: '',
+    purchase_date: moment().format('YYYY-MM-DDTHH:mm'),
     seller_name: '',
     seller_phone: '',
     purchase_price: 0,
@@ -258,8 +311,7 @@ const defaultPurchaseForm = ref({
 })
 const purchaseForm = ref({ ...defaultPurchaseForm.value })
 const purchaseFields = [
-    // { model: 'vehicle', label: 'Vehicle', placeholder: 'Choose one' },
-    { model: 'purchase_date', label: 'Purchase Date', placeholder: "YYYY-MM-DD" },
+    { model: 'purchase_date', label: 'Purchase Date', placeholder: "YYYY-MM-DD", type: "Date" },
     { model: 'seller_name', label: 'Seller Name' },
     { model: 'seller_phone', label: 'Seller Phone' },
     { model: 'purchase_price', label: 'Price', type: "Number" },
@@ -276,7 +328,7 @@ const nextPurchasePage = () => {
 
 /* ================================ */
 const handleSubmit = (data) => {
-    console.log("active Tab : ", activeTab)
+    console.log("ASDASD")
     if (isEdit.value) {
         if (activeTab.value == "Sales") {
             editSale(data)
@@ -284,7 +336,7 @@ const handleSubmit = (data) => {
             editPurchase(data)
         }
     } else {
-        if (activeTab.value == "Purchases") {
+        if (activeTab.value == "Sales") {
             addSale(data)
         } else {
             addPurchase(data)
@@ -296,14 +348,24 @@ const handleSubmit = (data) => {
 // Clear Form
 const clearForm = () => {
     saleForm.value = { ...defaultSaleForm.value }
+    purchaseForm.value = { ...defaultPurchaseForm.value }
+    selectedVehicleLabel.value = ''
 }
 
 const openEditModal = (data) => {
+    console.log("DATA : ", data)
+    let dataUpdated = {
+        urchase_date: data.purchase_date,
+        seller_name: data.seller_name,
+        seller_phone: data.seller_phone,
+        purchase_price: data.purchase_price,
+        qty: data.qty
+    }
     isEdit.value = true
     if (activeTab.value == 'Sales') {
         saleForm.value = { ...data }
     } else {
-        purchaseForm.value = { ...data }
+        purchaseForm.value = { ... dataUpdated }
     }
     showModal.value = true
 }
@@ -323,6 +385,7 @@ const fetchData = async (type, page, size, targetListRef, totalPageRef, targetPa
         })
         targetListRef.value = response.data
         totalPageRef.value = Math.ceil(response.data.length / targetPageSize)
+        vehicleModal.value = false
     } catch (error) {
         console.error(`Error fetching ${type}: `, error)
     } finally {
@@ -330,20 +393,21 @@ const fetchData = async (type, page, size, targetListRef, totalPageRef, targetPa
     }
 }
 
-const addData = async (vehicleType, data, fetchFunc) => {
+const addData = async (type, data, fetchFunc) => {
     if (!token) {
         alert('Unauthorized: No access token found.')
         return
     }
-
+    data.vehicle = selectVehicleID.value
     try {
-        await axios.post(`${API_BASE_URL}/api/vehicles/${vehicleType}/create`, data, {
+        await axios.post(`${API_BASE_URL}/api/sales-purchases/${type}/create/`, data, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
             }
         })
         alert('Successfully added new data.')
+        clearForm()
         fetchFunc()
     } catch (error) {
         alert('Failed to add new data')
@@ -351,14 +415,15 @@ const addData = async (vehicleType, data, fetchFunc) => {
     }
 }
 
-const editData = async (vehicleType, data, fetchFunc) => {
+const editData = async (type, data, fetchFunc) => {
     if (!token) {
         alert('Unauthorized: No access token found.')
         return
     }
+    console.log("DATA:  ", data)
 
     try {
-        await axios.put(`${API_BASE_URL}/api/vehicles/${vehicleType}/update/${data.id}/`, data, {
+        await axios.put(`${API_BASE_URL}/api/sales-purchases/${type}/update/${data.id}/`, data, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
@@ -405,9 +470,9 @@ const deleteData = async (vehicleType, id, fetchFunc) => {
 // /* Purchase */
 const fetchPurchases = () => fetchData('purchases', purchaseCurrentPage.value, purchasePageSize, purchases, purchaseTotalPages, purchasePageSize)
 
-// const addCar = (data) => addData('car', data, fetchCars)
+const addPurchase = (data) => addData('purchases', data, fetchPurchases)
 
-// const editCar = (data) => editData('car', data, fetchCars)
+const editPurchase = (data) => editData('purchases', data, fetchPurchases)
 
 // const deleteCar = (id) => deleteData('car', id, fetchCars)
 
@@ -424,6 +489,10 @@ onMounted(() => {
 
 watch(purchaseCurrentPage, () => {
     fetchPurchases()
+})
+
+watch(() => {
+    fetchVehicles()
 })
 
 </script>

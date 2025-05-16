@@ -92,6 +92,7 @@ class PurchaseListView(APIView):
 
                 purchases.append({
                     "id": purchase.id,
+                    "name": vehicle.name,
                     "vehicle_id": vehicle.id,
                     "vehicle_type": vehicle_type,
                     "color": vehicle.color,
@@ -101,7 +102,7 @@ class PurchaseListView(APIView):
                     "seller_name": purchase.seller_name,
                     "seller_phone": purchase.seller_phone,
                     "qty": purchase.qty,
-                    "purchase_price": purchase.price,
+                    "purchase_price": purchase.purchase_price,
                     "status": purchase.status,
                 })
 

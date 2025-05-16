@@ -12,7 +12,53 @@ from .serializers import (
     CarCreateSerializer,
     CarUpdateSerializer,
 )
-from .models import Motorcycle, Car
+from .models import Motorcycle, Car, Vehicle
+
+""" Union Vehicle View """
+class VehiclesView(APIView):
+    def get(self, request, format=None):
+        """Return all purchase data with detailed vehicle information"""
+        try:
+            vehicles = []
+
+            for vehicle in Vehicle.objects.all():
+                vehicle_type = "Vehicle"
+                extra_data = {}
+
+                if Car.objects.filter(id=vehicle.id).exists():
+                    car = Car.objects.get(id=vehicle.id)
+                    vehicle_type = "Car"
+                    extra_data = {
+                        "machine": car.machine,
+                        "passenger_cap": car.passenger_cap,
+                        "type": car.type,
+                    }
+                elif Motorcycle.objects.filter(id=vehicle.id).exists():
+                    motorcycle = Motorcycle.objects.get(id=vehicle.id)
+                    vehicle_type = "Motorcycle"
+                    extra_data = {
+                        "machine": motorcycle.machine,
+                        "suspenssion_type": motorcycle.suspenssion_type,
+                        "transmission_type": motorcycle.transmission_type,
+                    }
+
+                vehicles.append({
+                    "id": vehicle.id,
+                    "name": vehicle.name,
+                    "vehicle_type": vehicle_type,
+                    "color": vehicle.color,
+                    "price": vehicle.price,
+                    "release_year": vehicle.release_year,
+                    **extra_data
+                })
+
+            return Response(vehicles, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 """ Motorcycles """
 class MotorcycleListView(APIView):
@@ -24,6 +70,7 @@ class MotorcycleListView(APIView):
             motorcycles = [
                 {
                     "id": mc.id,
+                    "name": mc.name,
                     "release_year": mc.release_year,
                     "color": mc.color,
                     "price": mc.price,
@@ -111,6 +158,7 @@ class CarListView(APIView):
             cars = [
                 {
                     "id": car.id,
+                    "name": car.name,
                     "release_year": car.release_year,
                     "color": car.color,
                     "price": car.price,

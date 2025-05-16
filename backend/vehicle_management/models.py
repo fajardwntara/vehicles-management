@@ -3,6 +3,7 @@ from django.core.validators import MinValueValidator
 
 class Vehicle(models.Model):
     
+    name = models.CharField(max_length=255, null=True)
     release_year = models.IntegerField(
         validators=[MinValueValidator(1900)]
     )

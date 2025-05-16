@@ -28,7 +28,7 @@ class Purchase(models.Model):
     seller_phone = models.CharField(max_length=20)
     qty = models.PositiveIntegerField(default=0)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
-    price = models.DecimalField(
+    purchase_price = models.DecimalField(
         max_digits=12, 
         decimal_places=2,
         validators=[MinValueValidator(0)],
@@ -36,4 +36,4 @@ class Purchase(models.Model):
     )
 
     def __str__(self):
-        return f"Purchase of {self.vehicle} from {self.price} on {self.purchase_date} ({self.status})"
+        return f"Purchase of {self.vehicle} from {self.purchase_price} on {self.purchase_date} ({self.status})"
