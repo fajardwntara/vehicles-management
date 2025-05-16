@@ -127,10 +127,11 @@
                     <!-- Body -->
                     <div class="p-4 shadow-xl bg-white rounded-lg" v-if="activeTab === 'Sales' && sales">
 
-                        <!-- <ListTable :data="sales" :currentPage="motorCurrentPage" :pageSize="motorPageSize"
-                            :totalPages="motorTotalPages" :prevPage="prevMotorPage" :nextPage="nextMotorPage"
-                            :columns="['vehicle_type', 'release_year', 'machine', 'price', 'purchase_date', 'qty', 'status']"
-                            :headerColumns="['Vehicle Type', 'Release Year', 'Machine', 'Price', 'Purchase Date', 'Quantity', 'Status']">
+                        <!-- Sales -->
+                        <ListTable :data="sales" :currentPage="saleCurrentPage" :pageSize="salePageSize"
+                            :totalPages="saleTotalPages" :prevPage="prevSalePage" :nextPage="nextSalePage"
+                            :columns="['vehicle_type', 'name', 'release_year', 'machine', 'price', 'sale_date', 'qty', 'status']"
+                            :headerColumns="['Type', 'Name', 'Release Year', 'Machine', 'Price', 'Sale Date', 'Quantity', 'Status']">
 
                             <template #add-button>
                                 <button @click="showModalAdd"
@@ -143,6 +144,18 @@
                             </template>
 
                             <template #button="{ data }">
+                                <button @click="confirmSale(data)"
+                                    class="bg-slate-100 cursor-pointer hover:bg-slate-200 shadow-xl p-2 text-white rounded-lg mx-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                                        <g fill="none" stroke="#0ed700" stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="2">
+                                            <path
+                                                d="M3 12c0 -4.97 4.03 -9 9 -9c4.97 0 9 4.03 9 9c0 4.97 -4.03 9 -9 9c-4.97 0 -9 -4.03 -9 -9Z" />
+                                            <path d="M8 12l3 3l5 -5" />
+                                        </g>
+                                    </svg>
+                                </button>
+
                                 <button @click="openEditModal(data)"
                                     class="bg-slate-100 cursor-pointer hover:bg-slate-200 shadow-xl p-2 text-white rounded-lg mx-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
@@ -156,18 +169,16 @@
                                     </svg>
                                 </button>
 
-                                <button @click="deleteMotor(data.id)"
+                                <button @click="cancelSale(data)"
                                     class="shadow-xl bg-slate-100 cursor-pointer hover:bg-slate-200 p-2 text-white rounded-lg mx-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                        class="fill-red-500">
-                                        <path
-                                            d="M2 5.27L3.28 4L5 5.72l.28.28l1 1l2 2L16 16.72l2 2l2 2L18.73 22l-1.46-1.46c-.34.29-.77.46-1.27.46H8c-1.1 0-2-.9-2-2V9.27zM8 19h7.73L8 11.27zM18 7v9.18l-2-2V9h-5.18l-2-2zm-2.5-3H19v2H7.82l-2-2H8.5l1-1h5z" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48">
+                                        <path fill="#d50000"
+                                            d="M24 6C14.1 6 6 14.1 6 24s8.1 18 18 18s18-8.1 18-18S33.9 6 24 6m0 4c3.1 0 6 1.1 8.4 2.8L12.8 32.4C11.1 30 10 27.1 10 24c0-7.7 6.3-14 14-14m0 28c-3.1 0-6-1.1-8.4-2.8l19.6-19.6C36.9 18 38 20.9 38 24c0 7.7-6.3 14-14 14" />
                                     </svg>
-
                                 </button>
                             </template>
 
-                        </ListTable> -->
+                        </ListTable>
 
                     </div>
 
@@ -380,11 +391,11 @@ const clearForm = () => {
 
 const openEditModal = (data) => {
 
-    if (data.status == 'confirm') {
-        alert("The status is confirm.\nYou can only cancel the data")
+    if (data.status == 'confirm') { 
+        alert('You can only cancel the data')
         return
-    } else if (data.status == 'cancel') {
-        alert("The data has already been canceled.")
+    } else if(data.status == 'cancel'){
+        alert('Data has already been canceled')
         return
     }
 
@@ -398,7 +409,8 @@ const openEditModal = (data) => {
     })
 
     if (activeTab.value === 'Sales') {
-        saleForm.value = { ...dataUpdated }
+        selectedVehicleLabel.value = `${data.vehicle_type} - ${data.name} - ${data.release_year}`
+        saleForm.value = { ...data }
     } else {
         selectedVehicleLabel.value = `${data.vehicle_type} - ${data.name} - ${data.release_year}`
         purchaseForm.value = { ...data }
@@ -407,6 +419,7 @@ const openEditModal = (data) => {
     isEdit.value = true
     showModal.value = true
 }
+
 
 /* ========== Functions =========== */
 const fetchData = async (type, page, size, targetListRef, totalPageRef, targetPageSize) => {
@@ -454,15 +467,29 @@ const editData = async (type, data, fetchFunc) => {
         return
     }
 
-    try {
-        await axios.put(`${API_BASE_URL}/api/sales-purchases/${type}/update/${data.id}/`, {
+    let updatedData = {}
+
+    if (type == 'sales') {
+        updatedData = {
+            "vehicle": selectVehicleID.value,
+            "sale_date": data.sale_date,
+            "buyer_phone": data.buyer_phone,
+            "buyer_name": data.buyer_name,
+            "status": data.status
+        }
+    } else {
+        updatedData = {
             "vehicle": selectVehicleID.value,
             "purchase_date": data.purchase_date,
             "seller_phone": data.seller_phone,
             "seller_name": data.seller_name,
             "purchase_price": data.purchase_price,
             "status": data.status
-        }, {
+        }
+    }
+
+    try {
+        await axios.put(`${API_BASE_URL}/api/sales-purchases/${type}/update/${data.id}/`, updatedData, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
@@ -492,17 +519,30 @@ const confirmData = async (type, data, fetchFunc) => {
 
     const confirmed = confirm('Are you sure you want to confirm this data?')
     if (!confirmed) return
-    
-    
-    try {
-        await axios.put(`${API_BASE_URL}/api/sales-purchases/${type}/update/${data.id}/`, {
+
+    let updatedData = {}
+
+    if (type == 'sales') {
+        updatedData = {
+            "vehicle": data.vehicle_id,
+            "sale_date": data.sale_date,
+            "buyer_phone": data.buyer_phone,
+            "buyer_name": data.buyer_name,
+            "status": 'confirm'
+        }
+    } else {
+        updatedData = {
             "vehicle": data.vehicle_id,
             "purchase_date": data.purchase_date,
             "seller_phone": data.seller_phone,
             "seller_name": data.seller_name,
             "purchase_price": data.purchase_price,
             "status": 'confirm'
-        }, {
+        }
+    }
+
+    try {
+        await axios.put(`${API_BASE_URL}/api/sales-purchases/${type}/update/${data.id}/`, updatedData, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
@@ -525,23 +565,38 @@ const cancelData = async (type, data, fetchFunc) => {
     if (data.status == 'draft') {
         alert("You need to confirm the data.")
         return
-    }else if (data.status == 'cancel') {
+    } else if (data.status == 'cancel') {
         alert("Data has already been canceled.")
         return
     }
-    
+
     const confirmed = confirm('Are you sure you want to cancel this data?')
     if (!confirmed) return
-    
-    try {
-        await axios.put(`${API_BASE_URL}/api/sales-purchases/${type}/update/${data.id}/`, {
+
+    let updatedData = {}
+
+    if (type == 'sales') {
+        updatedData = {
+            "vehicle": data.vehicle_id,
+            "sale_date": data.sale_date,
+            "buyer_phone": data.buyer_phone,
+            "buyer_name": data.buyer_name,
+            "status": 'cancel'
+        }
+    } else {
+        updatedData = {
             "vehicle": data.vehicle_id,
             "purchase_date": data.purchase_date,
             "seller_phone": data.seller_phone,
             "seller_name": data.seller_name,
             "purchase_price": data.purchase_price,
             "status": 'cancel'
-        }, {
+        }
+    }
+
+
+    try {
+        await axios.put(`${API_BASE_URL}/api/sales-purchases/${type}/update/${data.id}/`, updatedData, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
@@ -557,13 +612,15 @@ const cancelData = async (type, data, fetchFunc) => {
 
 
 /* Motors */
-// const fetchMotors = () => fetchData('motorcycle', motorCurrentPage.value, motorPageSize, motors, motorTotalPages, motorPageSize)
+const fetchSales = () => fetchData('sales', saleCurrentPage.value, salePageSize, sales, saleTotalPages, salePageSize)
 
-// const addMotor = (data) => addData('motorcycle', data, fetchMotors)
+const addSale = (data) => addData('sales', data, fetchSales)
 
-// const editMotor = (data) => editData('motorcycle', data, fetchMotors)
+const editSale = (data) => editData('sales', data, fetchSales)
 
-// const deleteMotor = (id) => deleteData('motorcycle', id, fetchMotors)
+const confirmSale = (data) => confirmData('sales', data, fetchSales)
+
+const cancelSale = (data) => cancelData('sales', data, fetchSales)
 
 // /* Purchase */
 const fetchPurchases = () => fetchData('purchases', purchaseCurrentPage.value, purchasePageSize, purchases, purchaseTotalPages, purchasePageSize)
@@ -578,14 +635,14 @@ const cancelPurchase = (data) => cancelData('purchases', data, fetchPurchases)
 
 /* Configs */
 onMounted(() => {
-    //   fetchMotors()
+    fetchSales()
     fetchPurchases()
 
 })
 
-// watch(motorCurrentPage, () => {
-//   fetchMotors()
-// })
+watch(saleCurrentPage, () => {
+    fetchSales()
+})
 
 watch(purchaseCurrentPage, () => {
     fetchPurchases()

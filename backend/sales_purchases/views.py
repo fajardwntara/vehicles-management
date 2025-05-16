@@ -12,25 +12,54 @@ class SaleListView(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request, format=None):
-        """return all of data"""
+        """Return all purchase data with detailed vehicle information"""
         try:
-            sales = [
-                {
+            sales = []
+
+            for sale in Sale.objects.select_related('vehicle').all():
+                vehicle = sale.vehicle
+                vehicle_type = "Vehicle"
+                extra_data = {}
+
+                if Car.objects.filter(id=vehicle.id).exists():
+                    car = Car.objects.get(id=vehicle.id)
+                    vehicle_type = "Car"
+                    extra_data = {
+                        "machine": car.machine,
+                        "passenger_cap": car.passenger_cap,
+                        "type": car.type,
+                    }
+                elif Motorcycle.objects.filter(id=vehicle.id).exists():
+                    motorcycle = Motorcycle.objects.get(id=vehicle.id)
+                    vehicle_type = "Motorcycle"
+                    extra_data = {
+                        "machine": motorcycle.machine,
+                        "suspenssion_type": motorcycle.suspenssion_type,
+                        "transmission_type": motorcycle.transmission_type,
+                    }
+
+                sales.append({
                     "id": sale.id,
-                    "vehicle": sale.vehicle,
+                    "name": vehicle.name,
+                    "vehicle_id": vehicle.id,
+                    "vehicle_type": vehicle_type,
+                    "color": vehicle.color,
+                    "release_year": vehicle.release_year,
+                    **extra_data,
                     "sale_date": sale.sale_date,
                     "buyer_name": sale.buyer_name,
                     "buyer_phone": sale.buyer_phone,
+                    "qty": sale.qty,
+                    "price": vehicle.price,
                     "status": sale.status,
-                }
-                for sale in Sale.objects.all()
-            ]
+                })
 
             return Response(sales, status=status.HTTP_200_OK)
 
         except Exception as e:
             return Response(
-                {"error": f"{str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
 class SaleCreateView(APIView):
