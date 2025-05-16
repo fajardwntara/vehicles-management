@@ -1,6 +1,10 @@
 from rest_framework import serializers
 from .models import *
 
+class VehicleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vehicle
+        fields = '__all__'
 # Motorcycles
 class MotorcycleCreateSerializer(serializers.ModelSerializer):
     class Meta:

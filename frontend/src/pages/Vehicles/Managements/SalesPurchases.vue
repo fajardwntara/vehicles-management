@@ -41,12 +41,11 @@
             </div>
         </transition>
 
-        <ModalForm v-model:visible="showModal" :title="isEdit ? `Edit ${activeTab}` : `Add New ${activeTab}`"
-            :modelView="activeTab == 'Sales' ? saleForm : purchaseForm"
-            :fields="activeTab == 'Sales' ? saleFields : purchaseFields" :submitText="isEdit ? 'Update' : 'Save'"
+        <ModalForm v-model:visible="showModal" v-if="activeTab == 'Sales'" v-model:modelValue="saleForm"
+            :title="isEdit ? `Edit Sales` : 'Add New Sales'" :fields="saleFields"
+            :submitText="isEdit ? 'Update' : 'Save'"
             :submitClass="isEdit ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-slate-600 hover:bg-slate-700'"
             @submit="handleSubmit">
-
             <template #add-input>
                 <div class="block">
                     <button @click="showVehicleModal"
@@ -65,6 +64,28 @@
             </template>
         </ModalForm>
 
+        <ModalForm v-model:visible="showModal" v-else v-model:modelValue="purchaseForm"
+            :title="isEdit ? `Edit Purchase` : 'Add New Purchase'" :fields="purchaseFields"
+            :submitText="isEdit ? 'Update' : 'Save'"
+            :submitClass="isEdit ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-slate-600 hover:bg-slate-700'"
+            @submit="handleSubmit">
+            <template #add-input>
+                <div class="block">
+                    <button @click="showVehicleModal"
+                        class="cursor-pointer text-xs bg-slate-700 text-white px-4 py-2 rounded-lg hover:bg-slate-800 transition">
+                        Choose Vehicle
+                    </button>
+
+                    <div class="mt-2 text-xs text-gray-700 dark:text-white">
+                        <div class="font-medium">Selected:</div>
+                        <div>
+                            <span v-if="selectedVehicleLabel">{{ selectedVehicleLabel }}</span>
+                            <span v-else class="italic text-gray-400">Not selected yet</span>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </ModalForm>
 
         <!-- Sidebar -->
         <Sidebar :sidebarOpen="sidebarOpen" @close-sidebar="sidebarOpen = false" />
@@ -193,7 +214,7 @@
                                     </svg>
                                 </button>
 
-                                <button @click="cancelPurchase(data.id)"
+                                <button @click="cancelPurchase(data)"
                                     class="shadow-xl bg-slate-100 cursor-pointer hover:bg-slate-200 p-2 text-white rounded-lg mx-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48">
                                         <path fill="#d50000"
@@ -271,6 +292,12 @@ function selectVehicle(vehicle) {
     showModal.value = true
 }
 
+const showModalAdd = () => {
+    showModal.value = true
+    clearForm()
+}
+
+
 // Motor variables
 const saleCurrentPage = ref(1)
 const saleTotalPages = ref(1)
@@ -328,7 +355,6 @@ const nextPurchasePage = () => {
 
 /* ================================ */
 const handleSubmit = (data) => {
-    console.log("ASDASD")
     if (isEdit.value) {
         if (activeTab.value == "Sales") {
             editSale(data)
@@ -353,26 +379,33 @@ const clearForm = () => {
 }
 
 const openEditModal = (data) => {
-    console.log("DATA : ", data)
-    let dataUpdated = {
-        urchase_date: data.purchase_date,
-        seller_name: data.seller_name,
-        seller_phone: data.seller_phone,
-        purchase_price: data.purchase_price,
-        qty: data.qty
-    }
-    isEdit.value = true
-    if (activeTab.value == 'Sales') {
-        saleForm.value = { ...data }
-    } else {
-        purchaseForm.value = { ... dataUpdated }
-    }
-    showModal.value = true
-}
 
-const showModalAdd = () => {
+    if (data.status == 'confirm') {
+        alert("The status is confirm.\nYou can only cancel the data")
+        return
+    } else if (data.status == 'cancel') {
+        alert("The data has already been canceled.")
+        return
+    }
+
+    const keys = Object.keys(defaultPurchaseForm.value)
+    const dataUpdated = {}
+
+    keys.forEach(key => {
+        dataUpdated[key] = key === 'purchase_date'
+            ? moment(data[key]).format('YYYY-MM-DDTHH:mm')
+            : data[key]
+    })
+
+    if (activeTab.value === 'Sales') {
+        saleForm.value = { ...dataUpdated }
+    } else {
+        selectedVehicleLabel.value = `${data.vehicle_type} - ${data.name} - ${data.release_year}`
+        purchaseForm.value = { ...data }
+    }
+
+    isEdit.value = true
     showModal.value = true
-    clearForm()
 }
 
 /* ========== Functions =========== */
@@ -420,10 +453,16 @@ const editData = async (type, data, fetchFunc) => {
         alert('Unauthorized: No access token found.')
         return
     }
-    console.log("DATA:  ", data)
 
     try {
-        await axios.put(`${API_BASE_URL}/api/sales-purchases/${type}/update/${data.id}/`, data, {
+        await axios.put(`${API_BASE_URL}/api/sales-purchases/${type}/update/${data.id}/`, {
+            "vehicle": selectVehicleID.value,
+            "purchase_date": data.purchase_date,
+            "seller_phone": data.seller_phone,
+            "seller_name": data.seller_name,
+            "purchase_price": data.purchase_price,
+            "status": data.status
+        }, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
@@ -437,26 +476,85 @@ const editData = async (type, data, fetchFunc) => {
     }
 }
 
-const deleteData = async (vehicleType, id, fetchFunc) => {
-    const confirmed = confirm('Are you sure you want to delete this data?')
-    if (!confirmed) return
-
+const confirmData = async (type, data, fetchFunc) => {
     if (!token) {
         alert('Unauthorized: No access token found.')
         return
     }
 
+    if (data.status == 'confirm') {
+        alert("The status is confirm.\nYou can only cancel the data")
+        return
+    } else if (data.status == 'cancel') {
+        alert("The data has already been canceled.")
+        return
+    }
+
+    const confirmed = confirm('Are you sure you want to confirm this data?')
+    if (!confirmed) return
+    
+    
     try {
-        await axios.delete(`${API_BASE_URL}/api/vehicles/${vehicleType}/delete/${id}/`, {
-            headers: { Authorization: `Bearer ${token}` }
+        await axios.put(`${API_BASE_URL}/api/sales-purchases/${type}/update/${data.id}/`, {
+            "vehicle": data.vehicle_id,
+            "purchase_date": data.purchase_date,
+            "seller_phone": data.seller_phone,
+            "seller_name": data.seller_name,
+            "purchase_price": data.purchase_price,
+            "status": 'confirm'
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            }
         })
-        alert('Data deleted successfully.')
+        alert('Data updated successfully.')
         fetchFunc()
     } catch (error) {
-        alert('Failed to delete data')
+        alert('Failed to update data')
         console.error(error)
     }
 }
+
+const cancelData = async (type, data, fetchFunc) => {
+    if (!token) {
+        alert('Unauthorized: No access token found.')
+        return
+    }
+
+    if (data.status == 'draft') {
+        alert("You need to confirm the data.")
+        return
+    }else if (data.status == 'cancel') {
+        alert("Data has already been canceled.")
+        return
+    }
+    
+    const confirmed = confirm('Are you sure you want to cancel this data?')
+    if (!confirmed) return
+    
+    try {
+        await axios.put(`${API_BASE_URL}/api/sales-purchases/${type}/update/${data.id}/`, {
+            "vehicle": data.vehicle_id,
+            "purchase_date": data.purchase_date,
+            "seller_phone": data.seller_phone,
+            "seller_name": data.seller_name,
+            "purchase_price": data.purchase_price,
+            "status": 'cancel'
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            }
+        })
+        alert('Data updated successfully.')
+        fetchFunc()
+    } catch (error) {
+        alert('Failed to update data')
+        console.error(error)
+    }
+}
+
 
 /* Motors */
 // const fetchMotors = () => fetchData('motorcycle', motorCurrentPage.value, motorPageSize, motors, motorTotalPages, motorPageSize)
@@ -474,13 +572,15 @@ const addPurchase = (data) => addData('purchases', data, fetchPurchases)
 
 const editPurchase = (data) => editData('purchases', data, fetchPurchases)
 
-// const deleteCar = (id) => deleteData('car', id, fetchCars)
+const confirmPurchase = (data) => confirmData('purchases', data, fetchPurchases)
 
+const cancelPurchase = (data) => cancelData('purchases', data, fetchPurchases)
 
 /* Configs */
 onMounted(() => {
     //   fetchMotors()
     fetchPurchases()
+
 })
 
 // watch(motorCurrentPage, () => {
