@@ -29,6 +29,8 @@
                 </div>
             </main>
         </div>
+        <Spinner v-if="loading"/>
+        
     </div>
 </template>
 
