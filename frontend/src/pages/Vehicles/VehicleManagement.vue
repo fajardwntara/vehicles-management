@@ -44,6 +44,7 @@ import Header from '@/partials/Header.vue'
 // Icon
 import Car from '@/icons/Car.vue'
 import SalesPurchases from '@/icons/SalesPurchases.vue'
+import TransactionReport from '@/icons/Report.vue'
 
 const router = useRouter()
 
@@ -65,7 +66,8 @@ const menus = [
     {
         title: 'Reports',
         description: 'Financial and activity reports',
-        path: '/reports',
+        path: '/vehicle-management/transaction-report',
+        icon: TransactionReport
     }
 ]
 

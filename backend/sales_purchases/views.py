@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from django.db.models import Sum
 
 from .models import Sale, Purchase
 from .serializers import SaleSerializer, PurchaseSerializer
@@ -167,3 +168,24 @@ class PurchaseUpdateView(APIView):
                 "data": serializer.data
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+""" Transaction Report """
+
+class TotalTransactionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        sales = Sale.objects.filter(status='confirm')
+        total_sale = sum(sale.vehicle.price * sale.qty for sale in sales)
+
+        purchases = Purchase.objects.filter(status='confirm')
+        total_purchase = sum(purchase.purchase_price for purchase in purchases)
+
+        total_income = total_sale - total_purchase
+
+        return Response({
+            "total_sale": total_sale,
+            "total_purchase": total_purchase,
+            "total_income": total_income
+        })

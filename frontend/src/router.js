@@ -4,6 +4,7 @@ import User from './pages/User/UserManagement.vue'
 import VehicleManagement from './pages/Vehicles/VehicleManagement.vue'
 import Vehicle from '@/pages/Vehicles/Managements/Vehicle.vue'
 import SalesPurchases from '@/pages/Vehicles/Managements/SalesPurchases.vue'
+import TransactionReport from '@/pages/Vehicles/Managements/TransactionReport.vue'
 import NotFound from '@/pages/NotFound.vue'
 
 const router = createRouter({
@@ -15,6 +16,7 @@ const router = createRouter({
     { path: '/vehicle-management', component: VehicleManagement },
     { path: '/vehicle-management/vehicle', component: Vehicle },
     { path: '/vehicle-management/sales-purchases', component: SalesPurchases },
+    { path: '/vehicle-management/transaction-report', component: TransactionReport },
     { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }
   ]
 })

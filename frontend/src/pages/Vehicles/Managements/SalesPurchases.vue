@@ -420,7 +420,6 @@ const openEditModal = (data) => {
     showModal.value = true
 }
 
-
 /* ========== Functions =========== */
 const fetchData = async (type, page, size, targetListRef, totalPageRef, targetPageSize) => {
     loading.value = true
