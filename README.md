@@ -13,7 +13,7 @@
 4. `sudo docker compose exec backend python manage.py migrate` untuk melakukan migrasi model database
 5. `sudo docker compose exec backend python manage.py createsuperuser` untuk melakukan pembuatan superuser (Admin) untuk langkah awal dalam login
 6. Pergi ke `http://localhost:5173` untuk menjalankan frontend (Vue JS) aplikasi dalam melakukan aktivitas dari sisi pengguna.
-7. Pergi ke `http://localhost:8000` untuk menjalankan backend (Django REST Framework) dalam melakukan manajemen API. Berikut Link pada API Management: `https://drive.google.com/file/d/1r0V1HPcr9ERvsBAFIHu-Mexsdt-2E_aY/view?usp=sharing`
+7. Pergi ke `http://localhost:8000` untuk menjalankan backend (Django REST Framework) dalam melakukan manajemen API. Berikut link download pada API Management (Postman Collection): `https://drive.google.com/file/d/1r0V1HPcr9ERvsBAFIHu-Mexsdt-2E_aY/view?usp=sharing`
 
 ### NOTE
 Apabila memiliki kendala dalam melakukan build pada docker lakukan penghapusan image dan lakukan build ulang.
