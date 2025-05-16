@@ -8,18 +8,18 @@
 
 ### Langkah Install
 1. `git clone https://github.com/fajardwntara/vehicles-management.git` untuk clone repository
-2. `sudo docker compose up --build` untuk membangun semua dependencies yang dibutuhkan.
-3. `sudo docker compose exec backend python manage.py makemigrations` untuk melakukan pengecekan perubahan pada model database.
-4. `sudo docker compose exec backend python manage.py migrate` untuk melakukan migrasi model database
-5. `sudo docker compose exec backend python manage.py createsuperuser` untuk melakukan pembuatan superuser (Admin) untuk langkah awal dalam login
+2. `docker compose up --build` untuk membangun semua dependencies yang dibutuhkan.
+3. `docker compose exec backend python manage.py makemigrations` pada root folder untuk melakukan pengecekan perubahan pada model database.
+4. `docker compose exec backend python manage.py migrate` pada root folder untuk melakukan migrasi model database
+5. `docker compose exec backend python manage.py createsuperuser` pada root folder untuk melakukan pembuatan superuser (Admin) untuk langkah awal dalam login
 6. Pergi ke `http://localhost:5173` untuk menjalankan frontend (Vue JS) aplikasi dalam melakukan aktivitas dari sisi pengguna.
 7. Pergi ke `http://localhost:8000` untuk menjalankan backend (Django REST Framework) dalam melakukan manajemen API. Berikut link download pada API Management (Postman Collection): `https://drive.google.com/file/d/1r0V1HPcr9ERvsBAFIHu-Mexsdt-2E_aY/view?usp=sharing`
 
 ### NOTE
 Apabila memiliki kendala dalam melakukan build pada docker lakukan penghapusan image dan lakukan build ulang.
 
-`sudo docker compose down -v`
+`docker compose down -v`
 
-`sudo docker system prune -f`
+`docker system prune -f`
 
-`sudo docker compose build --no-cache`
+`docker compose build --no-cache`
