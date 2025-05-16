@@ -23,3 +23,10 @@ Apabila memiliki kendala dalam melakukan build pada docker lakukan penghapusan i
 `docker system prune -f`
 
 `docker compose build --no-cache`
+
+### Screenshoots
+![Login](images/login.png)
+
+![Menu](images/main-menu.png)
+
+![Form](images/form.png)
